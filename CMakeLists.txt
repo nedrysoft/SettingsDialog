@@ -35,9 +35,9 @@ set(NEDRYSOFT_LIBRARY_SETTINGSDIALOG_EXPORT)
 project(SettingsDialog)
 
 set(library_SOURCES
-    includes/ISettingsPage.h
-    includes/SettingsDialog.h
-    includes/SettingsDialogSpec.h
+    includes/SettingsDialog/ISettingsPage.h
+    includes/SettingsDialog/SettingsDialog.h
+    includes/SettingsDialog/SettingsDialogSpec.h
     src/SettingsDialog.cpp
 )
 

@@ -22,7 +22,7 @@
 #ifndef NEDRYSOFT_SETTINGSDIALOG_H
 #define NEDRYSOFT_SETTINGSDIALOG_H
 
-#include "SettingsDialogSpec.h"
+#include "SettingsDialog/SettingsDialogSpec.h"
 
 #include <QIcon>
 #include <QList>
@@ -42,7 +42,7 @@ class QStackedWidget;
 class QTreeWidget;
 class QVBoxLayout;
 
-namespace Nedrysoft {
+namespace Nedrysoft::SettingsDialog {
     class TransparentWidget;
     class ISettingsPage;
 

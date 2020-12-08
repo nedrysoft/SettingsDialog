@@ -23,7 +23,7 @@
 
 #include <QGraphicsOpacityEffect>
 
-Nedrysoft::TransparentWidget::TransparentWidget(QWidget *childWidget, double opacity, QWidget *parent) :
+Nedrysoft::SettingsDialog::TransparentWidget::TransparentWidget(QWidget *childWidget, double opacity, QWidget *parent) :
         QWidget(parent) {
 
     m_transparencyEffect = new QGraphicsOpacityEffect(this);
@@ -57,10 +57,10 @@ Nedrysoft::TransparentWidget::TransparentWidget(QWidget *childWidget, double opa
     }
 }
 
-QGraphicsOpacityEffect *Nedrysoft::TransparentWidget::transparencyEffect() {
+QGraphicsOpacityEffect *Nedrysoft::SettingsDialog::TransparentWidget::transparencyEffect() {
     return m_transparencyEffect;
 }
 
-void Nedrysoft::TransparentWidget::setTransparency(double value) {
+void Nedrysoft::SettingsDialog::TransparentWidget::setTransparency(double value) {
     m_transparencyEffect->setOpacity(value);
 }

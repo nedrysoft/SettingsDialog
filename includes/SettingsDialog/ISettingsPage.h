@@ -22,7 +22,7 @@
 #ifndef NEDRYSOFT_ISETTINGSPAGE_H
 #define NEDRYSOFT_ISETTINGSPAGE_H
 
-namespace Nedrysoft {
+namespace Nedrysoft::SettingsDialog {
     /**
      * @brief       The Settings Page Interface class.
      *

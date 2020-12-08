@@ -19,9 +19,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "SettingsDialog.h"
+#include "SettingsDialog/SettingsDialog.h"
 
-#include "ISettingsPage.h"
+#include "SettingsDialog/ISettingsPage.h"
 #include "TransparentWidget.h"
 
 #if defined(Q_OS_MACOS)
@@ -62,7 +62,7 @@ constexpr auto settingsIconSize = 32;
 constexpr auto settingsDialogScaleFactor = 0.5;
 #endif
 
-Nedrysoft::SettingsDialog::SettingsDialog(QList<ISettingsPage *> pages, QWidget *parent) :
+Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(QList<Nedrysoft::SettingsDialog::ISettingsPage *> pages, QWidget *parent) :
         QWidget(nullptr) {
 
 #if defined(Q_OS_MACOS)
@@ -71,7 +71,9 @@ Nedrysoft::SettingsDialog::SettingsDialog(QList<ISettingsPage *> pages, QWidget 
     m_toolBar = new QMacToolBar(this);
 
     m_animationGroup = nullptr;
+
 #else
+
     resize((QSizeF(parent->frameSize())*settingsDialogScaleFactor).toSize());
 
     m_mainLayout = new QHBoxLayout;
@@ -225,7 +227,7 @@ Nedrysoft::SettingsDialog::SettingsDialog(QList<ISettingsPage *> pages, QWidget 
 #endif
 }
 
-Nedrysoft::SettingsDialog::~SettingsDialog() {
+Nedrysoft::SettingsDialog::SettingsDialog::~SettingsDialog() {
 #if defined(Q_OS_MACOS)
     m_toolBar->deleteLater();
 
@@ -246,7 +248,7 @@ Nedrysoft::SettingsDialog::~SettingsDialog() {
 #endif
 }
 
-bool Nedrysoft::SettingsDialog::okToClose() {
+bool Nedrysoft::SettingsDialog::SettingsDialog::okToClose() {
 #if !defined(Q_OS_MACOS)
     auto acceptable = true;
 
@@ -261,7 +263,7 @@ bool Nedrysoft::SettingsDialog::okToClose() {
 }
 
 
-void Nedrysoft::SettingsDialog::resizeEvent(QResizeEvent *event) {
+void Nedrysoft::SettingsDialog::SettingsDialog::resizeEvent(QResizeEvent *event) {
     for(auto page : m_pages) {
         if (page->m_widget) {
             page->m_widget->resize(event->size());
@@ -269,7 +271,7 @@ void Nedrysoft::SettingsDialog::resizeEvent(QResizeEvent *event) {
     }
 }
 
-QWindow *Nedrysoft::SettingsDialog::nativeWindowHandle() {
+QWindow *Nedrysoft::SettingsDialog::SettingsDialog::nativeWindowHandle() {
     //
     // @note the call to winId() is required as it sets up windowHandle() to return the correct value,
     //       failing to call this will result in windowHandle not returning the correct value.
@@ -279,7 +281,7 @@ QWindow *Nedrysoft::SettingsDialog::nativeWindowHandle() {
     return window()->windowHandle();
 }
 
-Nedrysoft::SettingsPage *Nedrysoft::SettingsDialog::addPage(ISettingsPage *page) {
+Nedrysoft::SettingsDialog::SettingsPage *Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) {
 #if defined(Q_OS_MACOS)
     auto widgetContainer = new TransparentWidget(page->widget(), 0, this);
 
@@ -413,7 +415,7 @@ Nedrysoft::SettingsPage *Nedrysoft::SettingsDialog::addPage(ISettingsPage *page)
 #endif
 }
 
-void Nedrysoft::SettingsDialog::closeEvent(QCloseEvent *event) {
+void Nedrysoft::SettingsDialog::SettingsDialog::closeEvent(QCloseEvent *event) {
     if (okToClose()) {
         for (auto page : m_pages) {
             page->m_pageSettings->acceptSettings();

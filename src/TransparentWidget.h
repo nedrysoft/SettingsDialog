@@ -27,7 +27,7 @@
 
 class QGraphicsOpacityEffect;
 
-namespace Nedrysoft {
+namespace Nedrysoft::SettingsDialog {
     /**
      * @brief               The TransparentWidget class.
      *
