@@ -24,9 +24,7 @@
 
 namespace Nedrysoft::SettingsDialog {
     /**
-     * @brief       The Settings Page Interface class.
-     *
-     * @details     Describes the interface contract that a settings page must adhere to.
+     * @brief       The Settings Page class defines a settings page.
      */
     class SETTINGS_DIALOG_DLLSPEC ISettingsPage {
         public:
