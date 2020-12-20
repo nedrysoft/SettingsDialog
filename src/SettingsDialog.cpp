@@ -1,9 +1,11 @@
 /*
  * Copyright (C) 2020 Adrian Carpenter
  *
- * This file is part of Nedrysoft SettingsDialog. (https://github.com/fizzyade/SettingsDialog)
+ * This file is part of the Nedrysoft SettingsDialog. (https://github.com/fizzyade/SettingsDialog)
  *
- * Created by Adrian Carpenter on 05/12/2020.
+ * A cross-platform settings dialog
+ *
+ * Created by Adrian Carpenter on 07/12/2020.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,8 +68,6 @@ constexpr auto settingsIconSize = 32;
 constexpr auto settingsDialogScaleFactor = 0.5;
 #endif
 
-void doit(WId window);
-
 Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(QList<Nedrysoft::SettingsDialog::ISettingsPage *> pages, QWidget *parent) :
         QWidget(nullptr) {
 
@@ -77,7 +77,6 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(QList<Nedrysoft::Setti
     m_toolBar = new QMacToolBar(this);
 
     m_animationGroup = nullptr;
-
 #else
     resize((QSizeF(parent->frameSize())*settingsDialogScaleFactor).toSize());
 

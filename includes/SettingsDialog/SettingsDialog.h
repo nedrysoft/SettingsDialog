@@ -1,9 +1,11 @@
 /*
  * Copyright (C) 2020 Adrian Carpenter
  *
- * This file is part of Nedrysoft SettingsDialog. (https://github.com/fizzyade/SettingsDialog)
+ * This file is part of the Nedrysoft SettingsDialog. (https://github.com/fizzyade/SettingsDialog)
  *
- * Created by Adrian Carpenter on 05/12/2020.
+ * A cross-platform settings dialog
+ *
+ * Created by Adrian Carpenter on 08/12/2020.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

@@ -1,9 +1,9 @@
 /*
  * Copyright (C) 2020 Adrian Carpenter
  *
- * This file is part of Pingnoo (https://github.com/fizzyade/pingnoo)
+ * This file is part of the Nedrysoft SettingsDialog. (https://github.com/fizzyade/SettingsDialog)
  *
- * An open-source cross-platform traceroute analyser.
+ * A cross-platform settings dialog
  *
  * Created by Adrian Carpenter on 20/12/2020.
  *
