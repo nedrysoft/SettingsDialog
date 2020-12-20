@@ -78,7 +78,7 @@ else()
 endif()
 
 target_link_libraries(${PROJECT_NAME} ${Qt_LIBS})
-target_link_libraries(${PROJECT_NAME} "-lComponentSystem")
+target_link_libraries(${PROJECT_NAME} ComponentSystem)
 
 if(APPLE)
     target_link_libraries(${PROJECT_NAME} "-framework AppKit" "-framework Cocoa")

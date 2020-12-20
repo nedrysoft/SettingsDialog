@@ -407,17 +407,53 @@ Nedrysoft::SettingsDialog::SettingsPage *Nedrysoft::SettingsDialog::SettingsDial
 
     return settingsPage;
 #else
-    auto newTreeItem = new QTreeWidgetItem(m_treeWidget);
-    auto tabWidget = new QTabWidget();
+    QTabWidget *tabWidget = nullptr;
 
-    newTreeItem->setIcon(0, page->icon());
-    newTreeItem->setText(0, page->section());
-    newTreeItem->setData(0, Qt::UserRole, QVariant::fromValue(tabWidget));
-    newTreeItem->setData(0, Qt::ToolTipRole, page->description());
+    for (int currentItem=0;currentItem<m_treeWidget->topLevelItemCount();currentItem++) {
+        QString itemSection = m_treeWidget->topLevelItem(currentItem)->text(0);
 
-    m_treeWidget->addTopLevelItem(newTreeItem);
+        if (page->section()==itemSection) {
+            tabWidget = m_treeWidget->topLevelItem(currentItem)->data(0, Qt::UserRole).value<QTabWidget *>();
 
-    tabWidget->addTab(page->widget(), page->category());
+            break;
+        }
+    }
+
+    //QTreeWidgetItem *treeItem = nullptr;
+
+    if (!tabWidget) {
+        auto treeItem = new QTreeWidgetItem(m_treeWidget);
+        tabWidget = new QTabWidget();
+
+        treeItem->setIcon(0, page->icon());
+        treeItem->setText(0, page->section());
+        treeItem->setData(0, Qt::UserRole, QVariant::fromValue(tabWidget));
+        treeItem->setData(0, Qt::ToolTipRole, page->description());
+
+        m_treeWidget->addTopLevelItem(treeItem);
+
+        connect(m_treeWidget, &QTreeWidget::currentItemChanged, [=](QTreeWidgetItem *current, QTreeWidgetItem *previous) {
+            Q_UNUSED(previous);
+
+            auto widget = current->data(0, Qt::UserRole).value<QWidget *>();
+
+            if (widget) {
+                m_stackedWidget->setCurrentWidget(widget);
+                m_categoryLabel->setText(current->text(0));
+            }
+        });
+    }
+
+    QWidget *widget = new QWidget;
+    QVBoxLayout *widgetLayout = new QVBoxLayout;
+
+    widgetLayout->addWidget(page->widget());
+    widgetLayout->addSpacerItem(new QSpacerItem(0,0, QSizePolicy::Preferred, QSizePolicy::Expanding));
+
+    widget->setLayout(widgetLayout);
+
+
+    tabWidget->addTab(widget, page->category());
 
     m_stackedWidget->addWidget(tabWidget);
 
@@ -428,21 +464,6 @@ Nedrysoft::SettingsDialog::SettingsPage *Nedrysoft::SettingsDialog::SettingsDial
     settingsPage->m_pageSettings = page;
     settingsPage->m_icon = page->icon();
     settingsPage->m_description = page->description();
-
-    connect(m_treeWidget, &QTreeWidget::currentItemChanged, [=](QTreeWidgetItem *current, QTreeWidgetItem *previous) {
-        Q_UNUSED(previous);
-
-        auto widget = current->data(0, Qt::UserRole).value<QWidget *>();
-
-        if (widget) {
-            m_stackedWidget->setCurrentWidget(widget);
-            m_categoryLabel->setText(current->text(0));
-        }
-    });
-
-    /*if (defaultPage) {
-        m_treeWidget->setCurrentItem(newTreeItem);
-    }*/
 
     return settingsPage;
 #endif

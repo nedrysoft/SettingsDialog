@@ -144,7 +144,7 @@ namespace Nedrysoft::SettingsDialog {
         private:
 #if defined(Q_OS_MACOS)
             QMacToolBar *m_toolBar;                             //! A native macOS toolbar (unified style)
-            SettingsPage *m_currentPage;                        //! current widget
+            QMap<QMacToolBarItem *, SettingsPage *> m_pages;    //! The list of settings widgets
             int m_toolbarHeight;                                //! the height of the unified toolbar
             int m_maximumWidth;                                 //! the maximal width of all the settings page.
             QParallelAnimationGroup *m_animationGroup;          //! the currently active animation
@@ -159,8 +159,9 @@ namespace Nedrysoft::SettingsDialog {
             QPushButton *m_okButton;                            //! ok button, saves and dismisses the dialog (if changes valud)
             QPushButton *m_cancelButton;                        //! cancel button, fogets any changes made since last apply
             QPushButton *m_applyButton;                         //! apply button, saves changes but keeps dialog open
+            QList<SettingsPage *> m_pages;
 #endif
-            QMap<QMacToolBarItem *, SettingsPage *> m_pages;    //! The list of settings widgets
+            SettingsPage *m_currentPage;                        //! current widget
     };
 }
 
