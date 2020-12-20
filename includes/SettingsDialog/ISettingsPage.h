@@ -22,11 +22,21 @@
 #ifndef NEDRYSOFT_ISETTINGSPAGE_H
 #define NEDRYSOFT_ISETTINGSPAGE_H
 
+#include <ComponentSystem/IInterface.h>
+#include "SettingsDialogSpec.h"
+
 namespace Nedrysoft::SettingsDialog {
     /**
      * @brief       The Settings Page class defines a settings page.
      */
-    class SETTINGS_DIALOG_DLLSPEC ISettingsPage {
+    class SETTINGS_DIALOG_DLLSPEC ISettingsPage :
+            public Nedrysoft::ComponentSystem::IInterface {
+
+        private:
+            Q_OBJECT
+
+            Q_INTERFACES(Nedrysoft::ComponentSystem::IInterface)
+
         public:
             /**
              * @brief       The section name that this settings pagw should appear in, first level grouping.
@@ -76,5 +86,7 @@ namespace Nedrysoft::SettingsDialog {
             virtual void acceptSettings() = 0;
     };
 }
+
+Q_DECLARE_INTERFACE(Nedrysoft::SettingsDialog::ISettingsPage, "com.nedrysoft.settingsdialog.ISettingsPage/1.0.0")
 
 #endif // NEDRYSOFT_ISETTINGSPAGE_H

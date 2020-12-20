@@ -23,6 +23,9 @@
 
 #include "SettingsDialog/ISettingsPage.h"
 #include "TransparentWidget.h"
+#include "SeparatorWidget.h"
+
+#include <QGroupBox>
 
 #if defined(Q_OS_MACOS)
 #include <QtMac>
@@ -55,12 +58,15 @@ constexpr auto transisionDuration = 100ms;
 constexpr auto toolbarItemWidth = 64;
 constexpr auto alphaTransparent = 0;
 constexpr auto alphaOpaque = 1;
+constexpr auto defaultMinimumWidth = 600;
 #else
 constexpr auto categoryFontAdjustment = 6;
 constexpr auto settingsTreeWidth = 144;
 constexpr auto settingsIconSize = 32;
 constexpr auto settingsDialogScaleFactor = 0.5;
 #endif
+
+void doit(WId window);
 
 Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(QList<Nedrysoft::SettingsDialog::ISettingsPage *> pages, QWidget *parent) :
         QWidget(nullptr) {
@@ -73,7 +79,6 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(QList<Nedrysoft::Setti
     m_animationGroup = nullptr;
 
 #else
-
     resize((QSizeF(parent->frameSize())*settingsDialogScaleFactor).toSize());
 
     m_mainLayout = new QHBoxLayout;
@@ -193,38 +198,34 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(QList<Nedrysoft::Setti
 #if defined(Q_OS_MACOS)
     m_toolBar->attachToWindow(nativeWindowHandle());
 
-    QSize size;
+    QSize size(defaultMinimumWidth, 0);
 
     for(auto page : m_pages) {
         size = QSize(qMax(page->m_widget->sizeHint().width(), size.width()), qMax(page->m_widget->sizeHint().height(), size.height()));
     }
 
-    QPoint parentCentre(parent->frameGeometry().center());
-    //QPoint point((parentCentre.x()+size.width())/2, (parentCentre.y()+size.height())/2);
-
     m_toolbarHeight = frameGeometry().size().height()-geometry().size().height();
     m_maximumWidth = size.width();
 
-    if (m_currentPage) {
-        auto minSize = QSize(m_maximumWidth, m_currentPage->m_widget->sizeHint().height());
+    if (m_pages.first()) {
+        m_currentPage = m_pages.first();
 
-        setMinimumSize(minSize);
-        setMaximumSize(minSize);
+        m_currentPage->m_widget->setOpacity(1);
 
-        resize(minSize);
+        setMinimumSize(QSize(m_maximumWidth, m_currentPage->m_widget->sizeHint().height()));
+        setMaximumSize(QSize(m_maximumWidth, m_currentPage->m_widget->sizeHint().height()));
+
+        this->setWindowTitle(m_currentPage->m_name);
     }
-
-    for(auto page : m_pages) {
-        auto pageSize = QSize(m_maximumWidth, m_currentPage->m_widget->sizeHint().height());
-
-        setMinimumSize(pageSize);
-        setMaximumSize(pageSize);
-
-        page->m_widget->setFixedWidth(m_maximumWidth);
-        page->m_widget->resize(pageSize);
-    }
-
 #endif
+}
+
+const QSize Nedrysoft::SettingsDialog::SettingsDialog::sizeHint() {
+    if (m_currentPage) {
+        return m_currentPage->m_widget->sizeHint();
+    }
+
+    return QWidget::sizeHint();
 }
 
 Nedrysoft::SettingsDialog::SettingsDialog::~SettingsDialog() {
@@ -283,9 +284,33 @@ QWindow *Nedrysoft::SettingsDialog::SettingsDialog::nativeWindowHandle() {
 
 Nedrysoft::SettingsDialog::SettingsPage *Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) {
 #if defined(Q_OS_MACOS)
-    auto widgetContainer = new TransparentWidget(page->widget(), 0, this);
+    TransparentWidget *widgetContainer = nullptr;
+    SettingsPage *settingsPage = nullptr;
 
-    auto settingsPage = new SettingsPage;
+    for(auto currentPage : m_pages) {
+        if (currentPage->m_name==page->section()) {
+            widgetContainer = currentPage->m_widget;
+            settingsPage = currentPage;
+
+            break;
+        }
+    }
+
+    if (!widgetContainer) {
+        widgetContainer = new TransparentWidget(0, this);
+    }
+
+    if (widgetContainer->count()) {
+        widgetContainer->addWidget(new SeparatorWidget);
+    }
+
+    widgetContainer->addWidget(page->widget());
+
+    if (settingsPage) {
+        return settingsPage;
+    }
+
+    settingsPage = new SettingsPage;
 
     settingsPage->m_name = page->section();
     settingsPage->m_widget = widgetContainer;
@@ -302,6 +327,14 @@ Nedrysoft::SettingsDialog::SettingsPage *Nedrysoft::SettingsDialog::SettingsDial
     m_pages[settingsPage->m_toolBarItem] = settingsPage;
 
     connect(settingsPage->m_toolBarItem, &QMacToolBarItem::activated, this, [this, settingsPage]() {
+        if (!m_currentPage) {
+            m_currentPage = settingsPage;
+            m_currentPage->m_widget->setOpacity(1);
+
+            resize(m_currentPage->m_widget->sizeHint());
+
+            return;
+        }
         auto currentItem = m_pages[m_currentPage->m_toolBarItem]->m_widget;
         auto nextItem = settingsPage->m_widget;
 
@@ -356,7 +389,7 @@ Nedrysoft::SettingsDialog::SettingsPage *Nedrysoft::SettingsDialog::SettingsDial
         connect(m_animationGroup, &QParallelAnimationGroup::finished, [this]() {
             m_animationGroup->deleteLater();
 
-            m_animationGroup = 0;
+            m_animationGroup = nullptr;
         });
     });
 

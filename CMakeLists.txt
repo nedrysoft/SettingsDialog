@@ -55,6 +55,8 @@ if(APPLE)
     list(APPEND library_SOURCES
         src/MacHelper.h
         src/MacHelper.mm
+        src/SeparatorWidget.cpp
+        src/SeparatorWidget.h
         src/ThemeSupport.h
         src/ThemeSupport.mm
         src/TransparentWidget.cpp
@@ -76,6 +78,7 @@ else()
 endif()
 
 target_link_libraries(${PROJECT_NAME} ${Qt_LIBS})
+target_link_libraries(${PROJECT_NAME} "-lComponentSystem")
 
 if(APPLE)
     target_link_libraries(${PROJECT_NAME} "-framework AppKit" "-framework Cocoa")

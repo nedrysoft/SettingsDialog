@@ -22,9 +22,15 @@
 #include "TransparentWidget.h"
 
 #include <QGraphicsOpacityEffect>
-
-Nedrysoft::SettingsDialog::TransparentWidget::TransparentWidget(QWidget *childWidget, double opacity, QWidget *parent) :
+#include <QDebug>
+#include <QScrollArea>
+/*
+Nedrysoft::SettingsDialog::TransparentWidget::TransparentWidget(double opacity, QWidget *parent) :
         QWidget(parent) {
+
+    m_childSize = QSize(
+            childWidget->sizeHint().width(),
+            qMin(childWidget->sizeHint().height(), childWidget->size().height()) );
 
     m_transparencyEffect = new QGraphicsOpacityEffect(this);
 
@@ -55,12 +61,74 @@ Nedrysoft::SettingsDialog::TransparentWidget::TransparentWidget(QWidget *childWi
     if (opacity==0) {
         hide();
     }
+
+    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
+}
+*/
+
+Nedrysoft::SettingsDialog::TransparentWidget::TransparentWidget(double opacity, QWidget *parent) :
+        QWidget(parent) {
+
+    m_childSize = QSize(0,0);
+
+    m_layout = new QVBoxLayout;
+
+    m_layout->setMargin(12);
+    m_layout->setSpacing(4);
+
+    m_childWidget = nullptr;
+
+    setLayout(m_layout);
+
+    m_transparencyEffect = new QGraphicsOpacityEffect(this);
+
+    connect(m_transparencyEffect, &QGraphicsOpacityEffect::opacityChanged, [=](qreal opacity) {
+        if (opacity) {
+            setVisible(true);
+        } else {
+            setVisible(false);
+        }
+    });
+
+    m_transparencyEffect->setOpacity(opacity);
+
+    setGraphicsEffect(m_transparencyEffect);
+
+    if (opacity==0) {
+        hide();
+    }
+
+    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
+}
+
+void Nedrysoft::SettingsDialog::TransparentWidget::addWidget(QWidget *childWidget) {
+    if (childWidget) {
+        m_layout->addWidget(childWidget);
+
+        m_childSize += QSize(
+                childWidget->sizeHint().width(),
+                qMin(childWidget->sizeHint().height(), childWidget->size().height()) );
+
+        m_childSize.setHeight(m_childSize.height()+m_layout->margin());
+
+        if (m_layout->count()) {
+            m_childSize.setHeight(m_childSize.height()+(m_layout->spacing()*(m_layout->count()-1)));
+        }
+    }
+}
+
+int Nedrysoft::SettingsDialog::TransparentWidget::count() {
+    return m_layout->count();
+}
+
+const QSize Nedrysoft::SettingsDialog::TransparentWidget::sizeHint() {
+    return m_childSize;
 }
 
 QGraphicsOpacityEffect *Nedrysoft::SettingsDialog::TransparentWidget::transparencyEffect() {
     return m_transparencyEffect;
 }
 
-void Nedrysoft::SettingsDialog::TransparentWidget::setTransparency(double value) {
+void Nedrysoft::SettingsDialog::TransparentWidget::setOpacity(double value) {
     m_transparencyEffect->setOpacity(value);
 }

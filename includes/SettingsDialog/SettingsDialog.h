@@ -102,6 +102,13 @@ namespace Nedrysoft::SettingsDialog {
              */
             void closeEvent(QCloseEvent *event) override;
 
+            /**
+             * @brief       Returns the recommended size for the widget.
+             *
+             * @returns     the size of the widget.
+             */
+            const QSize sizeHint();
+
         private:
             /**
              * @brief       Returns the QWindow handle from native widget.

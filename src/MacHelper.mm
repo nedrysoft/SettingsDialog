@@ -22,6 +22,7 @@
 #include "MacHelper.h"
 
 #import <Appkit/AppKit.h>
+#import <AppKit/NSView.h>
 
 QPixmap Nedrysoft::MacHelper::standardImage(StandardImage::StandardImageName standardImage, QSize imageSize) {
     NSBitmapImageRep *bitmapRepresentation = [[NSBitmapImageRep alloc]

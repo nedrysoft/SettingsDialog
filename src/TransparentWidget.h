@@ -22,7 +22,7 @@
 #ifndef NEDRYSOFT_TRANSPARENTWIDGET_H
 #define NEDRYSOFT_TRANSPARENTWIDGET_H
 
-#include <QGridLayout>
+#include <QVBoxLayout>
 #include <QWidget>
 
 class QGraphicsOpacityEffect;
@@ -43,11 +43,10 @@ namespace Nedrysoft::SettingsDialog {
             /**
              * @brief       Constructs a new TransparentWidget instance.
              *
-             * @param[in]   childWidget the widget to make transparent.
              * @param[in]   opacity the initial transparency level, 0 is completely transparent, 1 is completely opaque.
              * @param[in]   parent the the parent of the widget.
              */
-            TransparentWidget(QWidget *childWidget=nullptr, double opacity=1, QWidget *parent=nullptr);
+            TransparentWidget(double opacity=1, QWidget *parent=nullptr);
 
             /**
              * @brief       Returns the transparency graphics effect.
@@ -57,16 +56,27 @@ namespace Nedrysoft::SettingsDialog {
             QGraphicsOpacityEffect *transparencyEffect();
 
             /**
-             * @brief       Sets the transparency value.
+             * @brief       Sets the opacity value.
              *
-             * @param[in]   value is the transparency level, 0 is completely transparent, 1 is completely opaque.
+             * @param[in]   value is the opacity level, 0 is completely transparent, 1 is completely opaque.
              */
-            void setTransparency(double value);
+            void setOpacity(double value);
 
+            /**
+             * @brief       Retutns the size hint for the widget.
+             *
+             * @note        This returns the child widgets size.
+             *
+             * @returns     the size.
+             */
+            const QSize sizeHint();
+            void addWidget(QWidget *childWidget);
+            int count();
         private:
             QGraphicsOpacityEffect *m_transparencyEffect;               //! the transparency graphics effect set to this widget
-            QGridLayout *m_layout;                                      //! layout used on the transparent window
+            QVBoxLayout *m_layout;                                      //! layout used on the transparent window
             QWidget *m_childWidget;                                     //! the child widget being made transparent
+            QSize m_childSize;
     };
 }
 
