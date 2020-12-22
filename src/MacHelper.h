@@ -27,6 +27,8 @@
 #include <QPixmap>
 #include <QtMacExtras>
 
+class QMacToolBar;
+
 namespace Nedrysoft {
     namespace StandardImage {
         /**
@@ -39,7 +41,7 @@ namespace Nedrysoft {
             NSImageNameUserAccounts,                              /**< the user accounts icon in preferences. */
             NSImageNameAdvanced                                   /**< the name icon in preferences. */
         };
-    };
+    }
 
     namespace AlertButton {
         /**
@@ -63,9 +65,9 @@ namespace Nedrysoft {
          *
          * @returns     the macOS identifier of the button that was
          */
-        constexpr int Button(int n) {
+        constexpr auto Button(int n) -> int {
             return FirstButton+n-1;
-        };
+        }
     }
 
     /**
@@ -83,7 +85,7 @@ namespace Nedrysoft {
              *
              * @returns     A pixmap of the named image.
              */
-            static QPixmap standardImage(StandardImage::StandardImageName imageName, QSize imageSize);
+            static auto standardImage(StandardImage::StandardImageName imageName, QSize imageSize) -> QPixmap;
 
             /**
              * @brief       Shows a native macOS alert dialog.
@@ -100,7 +102,7 @@ namespace Nedrysoft {
              *
              * @returns     the id of the button which was selected.
              */
-            static Nedrysoft::AlertButton::AlertButtonResult nativeAlert(QWidget *parent, QString messageText, QString informativeText, QStringList buttons);
+            static auto nativeAlert(QWidget *parent, const QString &messageText, const QString &informativeText, const QStringList &buttons) -> Nedrysoft::AlertButton::AlertButtonResult;
 
             /**
              * @brief       Loads an image via NSImage and returns a TIFF.
@@ -117,7 +119,7 @@ namespace Nedrysoft {
              *
              * @returns     true if the image was loaded successfully; otherwise false.
              */
-            static bool loadImage(QString &filename, char **data, unsigned int *length);
+            static auto loadImage(const QString &filename, std::shared_ptr<char *> &data, unsigned int *length) -> bool;
 
              /**
              * @brief       Returns a TIFF image of the files icon.
@@ -130,14 +132,14 @@ namespace Nedrysoft {
              *
              * @returns     true if the image was loaded successfully; otherwise false.
              */
-            static bool imageForFile(QString &filename, char **data, unsigned int *length, int width, int height);
+            static auto imageForFile(const QString &filename, std::shared_ptr<char *> &data, unsigned int *length, int width, int height) -> bool;
 
             /**
              * @brief       Returns the name of the font used in the GUI of macOS.
              *
              * @returns     the name of the system font.
              */
-            static QString systemFontName();
+            static auto systemFontName() -> QString;
 
             /**
              * @brief       Returns the path of the font specified by fontName.
@@ -146,8 +148,15 @@ namespace Nedrysoft {
              *
              * @returns     the path to the font if found; otherwise an empty string.
              */
-            static QString fontFilename(const QString &fontName);
+            static auto fontFilename(const QString &fontName) -> QString;
+
+            /**
+             * @brief       Changes the native toolbar to a preferences toolbar.
+             *
+             * @param[in]   window the window with the native toolbar.
+             */
+            static void enablePreferencesToolbar(QWidget *window);
     };
-};
+}
 
 #endif // NEDRYSOFT_MACHELPER_H

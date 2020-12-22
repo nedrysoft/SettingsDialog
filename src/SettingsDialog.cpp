@@ -54,6 +54,8 @@
 #include "MacHelper.h"
 #include "ThemeSupport.h"
 
+#include <memory>
+
 using namespace std::chrono_literals;
 
 constexpr auto transisionDuration = 100ms;
@@ -67,7 +69,7 @@ constexpr auto settingsTreeWidth = 144;
 constexpr auto settingsIconSize = 32;
 constexpr auto settingsDialogScaleFactor = 0.5;
 #endif
-
+extern "C"  void toolbarStyle(WId wid);
 Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(QList<Nedrysoft::SettingsDialog::ISettingsPage *> pages, QWidget *parent) :
         QWidget(nullptr) {
 
@@ -196,6 +198,8 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(QList<Nedrysoft::Setti
 
 #if defined(Q_OS_MACOS)
     m_toolBar->attachToWindow(nativeWindowHandle());
+
+    Nedrysoft::MacHelper::enablePreferencesToolbar(this);
 
     QSize size(defaultMinimumWidth, 0);
 

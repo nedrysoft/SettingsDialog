@@ -23,22 +23,50 @@
 
 #include "MacHelper.h"
 
-#import <Appkit/AppKit.h>
-#import <AppKit/NSView.h>
+#include <QDialog>
 
-QPixmap Nedrysoft::MacHelper::standardImage(StandardImage::StandardImageName standardImage, QSize imageSize) {
-    NSBitmapImageRep *bitmapRepresentation = [[NSBitmapImageRep alloc]
-        initWithBitmapDataPlanes: nullptr
-        pixelsWide: imageSize.width()
-        pixelsHigh: imageSize.height()
-        bitsPerSample: 8
-        samplesPerPixel: 4
-        hasAlpha: YES
-        isPlanar: NO
-        colorSpaceName: NSDeviceRGBColorSpace
-        bitmapFormat: NSBitmapFormatAlphaFirst
-        bytesPerRow: 0
-        bitsPerPixel: 0
+#import <Appkit/AppKit.h>
+
+constexpr auto bitsPerPixel = 8;
+constexpr auto samplesPerPixel = 4;
+constexpr auto systemFontSize = 12;
+
+void Nedrysoft::MacHelper::enablePreferencesToolbar(QWidget *window) {
+    auto nativeView = reinterpret_cast<NSView *>(window->winId());
+
+    if (!nativeView) {
+        return;
+    }
+
+    Q_ASSERT_X([nativeView isKindOfClass:[NSView class]], static_cast<const char *>(__FUNCTION__), "Object was not a NSView");
+
+    auto nativeWindow = [nativeView window];
+
+    if (nativeWindow==nil) {
+        return;
+    }
+
+    Q_ASSERT_X([nativeWindow isKindOfClass:[NSWindow class]], static_cast<const char *>(__FUNCTION__), "Object was not a NSWindow");
+
+    if( [nativeWindow respondsToSelector:@selector(setToolbarStyle:)] ) {
+        [nativeWindow setToolbarStyle:NSWindowToolbarStylePreference];
+    }
+}
+
+
+auto Nedrysoft::MacHelper::standardImage(StandardImage::StandardImageName standardImage, QSize imageSize)->QPixmap {
+    auto bitmapRepresentation = [[NSBitmapImageRep alloc]
+            initWithBitmapDataPlanes: nullptr
+                          pixelsWide: imageSize.width()
+                          pixelsHigh: imageSize.height()
+                       bitsPerSample: bitsPerPixel
+                     samplesPerPixel: samplesPerPixel
+                            hasAlpha: YES
+                            isPlanar: NO
+                      colorSpaceName: NSDeviceRGBColorSpace
+                        bitmapFormat: NSBitmapFormatAlphaFirst
+                         bytesPerRow: 0
+                        bitsPerPixel: 0
     ];
 
     NSString *nativeImageName = nullptr;
@@ -60,7 +88,7 @@ QPixmap Nedrysoft::MacHelper::standardImage(StandardImage::StandardImageName sta
         }
     }
 
-    NSImage *nsImage = [NSImage imageNamed: nativeImageName];
+    auto nsImage = [NSImage imageNamed: nativeImageName];
 
     [NSGraphicsContext saveGraphicsState];
 
@@ -70,17 +98,19 @@ QPixmap Nedrysoft::MacHelper::standardImage(StandardImage::StandardImageName sta
 
     [NSGraphicsContext restoreGraphicsState];
 
-    QPixmap pixmap = QtMac::fromCGImageRef([bitmapRepresentation CGImage]);
+    auto pixmap = QtMac::fromCGImageRef([bitmapRepresentation CGImage]);
 
     [bitmapRepresentation release];
 
     return pixmap;
 }
 
-Nedrysoft::AlertButton::AlertButtonResult Nedrysoft::MacHelper::nativeAlert(QWidget *parent, QString messageText, QString informativeText, QStringList buttons) {
-    NSAlert *alert = [[NSAlert alloc] init];
+auto Nedrysoft::MacHelper::nativeAlert(QWidget *parent, const QString &messageText, const QString &informativeText, const QStringList &buttons) -> Nedrysoft::AlertButton::AlertButtonResult {
+    Q_UNUSED(parent)
 
-    for (auto button : buttons) {
+    auto alert = [[NSAlert alloc] init];
+
+    for (auto &button : buttons) {
         [alert addButtonWithTitle:button.toNSString()];
     }
 
@@ -95,18 +125,19 @@ Nedrysoft::AlertButton::AlertButtonResult Nedrysoft::MacHelper::nativeAlert(QWid
     return result;
 }
 
-bool Nedrysoft::MacHelper::loadImage(QString &filename, char **data, unsigned int *length) {
-    NSString *fileName = filename.toNSString();
+auto Nedrysoft::MacHelper::loadImage(const QString &filename, std::shared_ptr<char *> &data, unsigned int *length) -> bool {
+    auto fileName = filename.toNSString();
 
-    NSImage *loadedImage = [[NSImage alloc] initWithContentsOfFile:fileName];
+    auto loadedImage = [[NSImage alloc] initWithContentsOfFile:fileName];
 
     if (loadedImage.isValid) {
         NSData *tiffData = [loadedImage TIFFRepresentation];
 
-        *data = (char *) malloc(tiffData.length);
+        data = std::make_shared<char *>(static_cast<char *>(malloc(tiffData.length)));
+
         *length = static_cast<unsigned int>(tiffData.length);
 
-        memcpy(*data, tiffData.bytes, *length);
+        memcpy(data.get(), tiffData.bytes, *length);
 
         [loadedImage release];
 
@@ -118,7 +149,7 @@ bool Nedrysoft::MacHelper::loadImage(QString &filename, char **data, unsigned in
     return false;
 }
 
-bool Nedrysoft::MacHelper::imageForFile(QString &filename, char **data, unsigned int *length, int width, int height) {
+auto Nedrysoft::MacHelper::imageForFile(const QString &filename, std::shared_ptr<char *> &data, unsigned int *length, int width, int height) -> bool {
     auto loadedImage = [[NSWorkspace sharedWorkspace] iconForFile:filename.toNSString()];
 
     [loadedImage setSize:NSMakeSize(width,height)];
@@ -126,10 +157,11 @@ bool Nedrysoft::MacHelper::imageForFile(QString &filename, char **data, unsigned
     if (loadedImage.isValid) {
         NSData *tiffData = [loadedImage TIFFRepresentation];
 
-        *data = (char *) malloc(tiffData.length);
+        data = std::make_shared<char *>(static_cast<char *>(malloc(tiffData.length)));
+
         *length = static_cast<unsigned int>(tiffData.length);
 
-        memcpy(*data, tiffData.bytes, *length);
+        memcpy(data.get(), tiffData.bytes, *length);
 
         return true;
     }
@@ -137,23 +169,23 @@ bool Nedrysoft::MacHelper::imageForFile(QString &filename, char **data, unsigned
     return false;
 }
 
-QString Nedrysoft::MacHelper::systemFontName() {
-    NSFont *font = [NSFont systemFontOfSize:12];
+auto Nedrysoft::MacHelper::systemFontName() -> QString {
+    auto font = [NSFont systemFontOfSize: systemFontSize];
 
     return QString([[font fontName] cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 }
 
-QString Nedrysoft::MacHelper::fontFilename(const QString& fontName) {
-    NSFont *font = [NSFont fontWithName: [NSString stringWithCString:fontName.toLatin1().data() encoding:[NSString defaultCStringEncoding]] size:12];
+auto Nedrysoft::MacHelper::fontFilename(const QString& fontName) ->QString {
+    auto font = [NSFont fontWithName: [NSString stringWithCString: fontName.toLatin1().data() encoding: [NSString defaultCStringEncoding]] size: systemFontSize];
 
     if (font) {
-        CTFontDescriptorRef fontRef = CTFontDescriptorCreateWithNameAndSize((CFStringRef) [font fontName], [font pointSize]);
+        auto fontRef = CTFontDescriptorCreateWithNameAndSize(reinterpret_cast<CFStringRef>([font fontName]), [font pointSize]);
 
         auto url = static_cast<CFURLRef>(CTFontDescriptorCopyAttribute(fontRef, kCTFontURLAttribute));
 
-        NSString *fontPath = [NSString stringWithString:[(NSURL *) CFBridgingRelease(url) path]];
+        auto fontPath = [NSString stringWithString: [(NSURL *) CFBridgingRelease(url) path]];
 
-        return QString([fontPath cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+        return QString([fontPath cStringUsingEncoding: [NSString defaultCStringEncoding]]);
     }
 
     return QString();
