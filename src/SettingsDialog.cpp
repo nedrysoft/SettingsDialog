@@ -35,24 +35,15 @@
 #endif
 
 #include <QApplication>
-#include <QDebug>
 #include <QGraphicsOpacityEffect>
-#include <QGridLayout>
-#include <QHBoxLayout>
-#include <QIcon>
-#include <QLabel>
 #include <QParallelAnimationGroup>
 #include <QPropertyAnimation>
-#include <QPushButton>
 #include <QResizeEvent>
-#include <QStackedWidget>
-#include <QTabWidget>
 #include <QTreeWidget>
 #include <QVBoxLayout>
 
 #if defined(Q_OS_MACOS)
 #include "MacHelper.h"
-#include "ThemeSupport.h"
 
 #include <memory>
 
@@ -69,9 +60,11 @@ constexpr auto settingsTreeWidth = 144;
 constexpr auto settingsIconSize = 32;
 constexpr auto settingsDialogScaleFactor = 0.5;
 #endif
-extern "C"  void toolbarStyle(WId wid);
+
 Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(QList<Nedrysoft::SettingsDialog::ISettingsPage *> pages, QWidget *parent) :
         QWidget(nullptr) {
+
+    Q_UNUSED(parent)
 
 #if defined(Q_OS_MACOS)
     m_currentPage = nullptr;
@@ -223,7 +216,7 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(QList<Nedrysoft::Setti
 #endif
 }
 
-const QSize Nedrysoft::SettingsDialog::SettingsDialog::sizeHint() {
+auto Nedrysoft::SettingsDialog::SettingsDialog::sizeHint() -> const QSize {
     if (m_currentPage) {
         return m_currentPage->m_widget->sizeHint();
     }
@@ -252,7 +245,7 @@ Nedrysoft::SettingsDialog::SettingsDialog::~SettingsDialog() {
 #endif
 }
 
-bool Nedrysoft::SettingsDialog::SettingsDialog::okToClose() {
+auto Nedrysoft::SettingsDialog::SettingsDialog::okToClose() -> bool {
 #if !defined(Q_OS_MACOS)
     auto acceptable = true;
 
@@ -267,7 +260,7 @@ bool Nedrysoft::SettingsDialog::SettingsDialog::okToClose() {
 }
 
 
-void Nedrysoft::SettingsDialog::SettingsDialog::resizeEvent(QResizeEvent *event) {
+auto Nedrysoft::SettingsDialog::SettingsDialog::resizeEvent(QResizeEvent *event) -> void {
     for(auto page : m_pages) {
         if (page->m_widget) {
             page->m_widget->resize(event->size());
@@ -275,7 +268,7 @@ void Nedrysoft::SettingsDialog::SettingsDialog::resizeEvent(QResizeEvent *event)
     }
 }
 
-QWindow *Nedrysoft::SettingsDialog::SettingsDialog::nativeWindowHandle() {
+auto Nedrysoft::SettingsDialog::SettingsDialog::nativeWindowHandle() -> QWindow * {
     //
     // @note the call to winId() is required as it sets up windowHandle() to return the correct value,
     //       failing to call this will result in windowHandle not returning the correct value.
@@ -285,7 +278,7 @@ QWindow *Nedrysoft::SettingsDialog::SettingsDialog::nativeWindowHandle() {
     return window()->windowHandle();
 }
 
-Nedrysoft::SettingsDialog::SettingsPage *Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) {
+auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> Nedrysoft::SettingsDialog::SettingsPage * {
 #if defined(Q_OS_MACOS)
     TransparentWidget *widgetContainer = nullptr;
     SettingsPage *settingsPage = nullptr;
@@ -472,7 +465,7 @@ Nedrysoft::SettingsDialog::SettingsPage *Nedrysoft::SettingsDialog::SettingsDial
 #endif
 }
 
-void Nedrysoft::SettingsDialog::SettingsDialog::closeEvent(QCloseEvent *event) {
+auto Nedrysoft::SettingsDialog::SettingsDialog::closeEvent(QCloseEvent *event) -> void {
     if (okToClose()) {
         for (auto page : m_pages) {
             page->m_pageSettings->acceptSettings();

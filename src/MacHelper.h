@@ -47,7 +47,7 @@ namespace Nedrysoft {
         /**
          * @brief       AlertButton enum.
          *
-         * @details     Equivilent values from NSAlert
+         * @details     Equivalent values from NSAlert
          */
         enum AlertButtonResult {
             FirstButton = 1000,                                   /**< the first button in an NSAlert **/
@@ -98,7 +98,7 @@ namespace Nedrysoft {
              * @note        macOS returns NSAlertFirstButtonReturn, NSAlertSecondButtonReturn, NSAlertThirdButtonReturn
              *              NSAlertFirstButtonReturn+n etc.  NSAlertFirstButtonReturn is the constant 1000.
              *
-             * @see         NedrySoft::AlertButton
+             * @see         Nedrysoft::AlertButton
              *
              * @returns     the id of the button which was selected.
              */

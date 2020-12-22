@@ -26,47 +26,6 @@
 #include <QGraphicsOpacityEffect>
 #include <QDebug>
 #include <QScrollArea>
-/*
-Nedrysoft::SettingsDialog::TransparentWidget::TransparentWidget(double opacity, QWidget *parent) :
-        QWidget(parent) {
-
-    m_childSize = QSize(
-            childWidget->sizeHint().width(),
-            qMin(childWidget->sizeHint().height(), childWidget->size().height()) );
-
-    m_transparencyEffect = new QGraphicsOpacityEffect(this);
-
-    m_layout = new QGridLayout;
-
-    m_layout->setMargin(0);
-
-    m_childWidget = childWidget;
-
-    setLayout(m_layout);
-
-    if (childWidget) {
-        m_layout->addWidget(childWidget);
-    }
-
-    connect(m_transparencyEffect, &QGraphicsOpacityEffect::opacityChanged, [=](qreal opacity) {
-        if (opacity) {
-            setVisible(true);
-        } else {
-            setVisible(false);
-        }
-    });
-
-    m_transparencyEffect->setOpacity(opacity);
-
-    setGraphicsEffect(m_transparencyEffect);
-
-    if (opacity==0) {
-        hide();
-    }
-
-    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
-}
-*/
 
 Nedrysoft::SettingsDialog::TransparentWidget::TransparentWidget(double opacity, QWidget *parent) :
         QWidget(parent) {
@@ -84,6 +43,8 @@ Nedrysoft::SettingsDialog::TransparentWidget::TransparentWidget(double opacity, 
 
     m_transparencyEffect = new QGraphicsOpacityEffect(this);
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "VirtualCallInCtorOrDtor"
     connect(m_transparencyEffect, &QGraphicsOpacityEffect::opacityChanged, [=](qreal opacity) {
         if (opacity) {
             setVisible(true);
@@ -91,6 +52,7 @@ Nedrysoft::SettingsDialog::TransparentWidget::TransparentWidget(double opacity, 
             setVisible(false);
         }
     });
+#pragma clang diagnostic pop
 
     m_transparencyEffect->setOpacity(opacity);
 
@@ -103,7 +65,8 @@ Nedrysoft::SettingsDialog::TransparentWidget::TransparentWidget(double opacity, 
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
 }
 
-void Nedrysoft::SettingsDialog::TransparentWidget::addWidget(QWidget *childWidget) {
+
+auto Nedrysoft::SettingsDialog::TransparentWidget::addWidget(QWidget *childWidget) -> void {
     if (childWidget) {
         m_layout->addWidget(childWidget);
 
@@ -119,18 +82,18 @@ void Nedrysoft::SettingsDialog::TransparentWidget::addWidget(QWidget *childWidge
     }
 }
 
-int Nedrysoft::SettingsDialog::TransparentWidget::count() {
+auto Nedrysoft::SettingsDialog::TransparentWidget::count() -> int {
     return m_layout->count();
 }
 
-const QSize Nedrysoft::SettingsDialog::TransparentWidget::sizeHint() {
+auto Nedrysoft::SettingsDialog::TransparentWidget::sizeHint() -> const QSize {
     return m_childSize;
 }
 
-QGraphicsOpacityEffect *Nedrysoft::SettingsDialog::TransparentWidget::transparencyEffect() {
+auto Nedrysoft::SettingsDialog::TransparentWidget::transparencyEffect() -> QGraphicsOpacityEffect * {
     return m_transparencyEffect;
 }
 
-void Nedrysoft::SettingsDialog::TransparentWidget::setOpacity(double value) {
+auto Nedrysoft::SettingsDialog::TransparentWidget::setOpacity(double value) -> void {
     m_transparencyEffect->setOpacity(value);
 }

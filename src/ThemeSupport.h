@@ -55,9 +55,9 @@ namespace Nedrysoft::Utils {
              * @returns     true if dark mode; otherwise false.
              */
 #if defined(Q_OS_MACOS)
-            static bool isDarkMode();
+            static auto isDarkMode() -> bool;
 #else
-            static bool isDarkMode() {
+            static auto isDarkMode() -> bool {
                 return false;
             }
 #endif
@@ -75,7 +75,7 @@ namespace Nedrysoft::Utils {
              *
              * @returns     the colour.
              */
-            static QColor getColor(const QRgb PushButtonColor[]);
+            static auto getColor(const QRgb PushButtonColor[]) -> QColor;
 
             /**
              * @brief       Returns the highlighted text background color
@@ -85,21 +85,21 @@ namespace Nedrysoft::Utils {
              *
              * @returns     the colour
              */
-            static QColor getHighlightedBackground();
+            static auto getHighlightedBackground() -> QColor;
 
             /**
              * @brief       Returns a string indicating which mode the OS is in.
              *
              * @returns     "dark" if dark mode; otherwise "light".
              */
-            static QString theme();
+            static auto theme() -> QString;
 
             /**
              * @brief       Returns a string and replaces [theme] with the actual theme in use.
              *
              * @returns     the resulting string.
              */
-            static QString themedString(QString string);
+            static auto themedString(QString string) -> QString;
     };
 }
 

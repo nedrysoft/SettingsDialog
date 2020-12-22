@@ -53,27 +53,40 @@ namespace Nedrysoft::SettingsDialog {
             /**
              * @brief       Returns the transparency graphics effect.
              *
-             * @returns     the transparency effoct so that it can be used by property animation.
+             * @returns     the transparency effect so that it can be used by property animation.
              */
-            QGraphicsOpacityEffect *transparencyEffect();
+            auto transparencyEffect() -> QGraphicsOpacityEffect *;
 
             /**
              * @brief       Sets the opacity value.
              *
              * @param[in]   value is the opacity level, 0 is completely transparent, 1 is completely opaque.
              */
-            void setOpacity(double value);
+            auto setOpacity(double value) -> void;
 
             /**
-             * @brief       Retutns the size hint for the widget.
+             * @brief       Returns the size hint for the widget.
              *
              * @note        This returns the child widgets size.
              *
              * @returns     the size.
              */
-            const QSize sizeHint();
-            void addWidget(QWidget *childWidget);
-            int count();
+            auto sizeHint() -> const QSize;
+
+            /**
+             * @brief       Adds a widget to the layout.
+             *
+             * @param[in]   childWidget the widget to add to the layout.
+             */
+            auto addWidget(QWidget *childWidget) -> void;
+
+            /**
+             * @brief       Returns the number of widgets in the layout.
+             *
+             * @returns     the number of widgets.
+             */
+            auto count() -> int;
+
         private:
             QGraphicsOpacityEffect *m_transparencyEffect;               //! the transparency graphics effect set to this widget
             QVBoxLayout *m_layout;                                      //! layout used on the transparent window

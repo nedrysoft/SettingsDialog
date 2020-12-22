@@ -41,51 +41,51 @@ namespace Nedrysoft::SettingsDialog {
 
         public:
             /**
-             * @brief       The section name that this settings pagw should appear in, first level grouping.
+             * @brief       The section name that this settings page should appear in, first level grouping.
              *
              * @returns     a string containing the name.
              */
-            virtual QString section() = 0;
+            virtual auto section() -> QString = 0;
 
             /**
              * @brief       The category name that this settings page should appear in, second level grouping.
              *
              * @returns     a string containing the name.
              */
-            virtual QString category() = 0;
+            virtual auto category() -> QString = 0;
 
             /**
              * @brief       The descriptive label for this settings page.
              *
              * @returns     a string containing the name.
              */
-            virtual QString description() = 0;
+            virtual auto description() -> QString = 0;
 
             /**
              * @brief       The icon for this settings page.
              *
              * @returns     a QIcon
              */
-            virtual QIcon icon() = 0;
+            virtual auto icon() -> QIcon = 0;
 
             /**
              * @brief       The widget for the page.
              *
              * @returns     a widget.
              */
-            virtual QWidget *widget() = 0;
+            virtual auto widget() -> QWidget * = 0;
 
             /**
              * @brief       Checks if the settings can be applied.
              *
              * @returns     true if the settings can be applied (i.e valid); otherwise false.
              */
-            virtual bool canAcceptSettings() = 0;
+            virtual auto canAcceptSettings() -> bool = 0;
 
             /**
              * @brief       Applies the current settings.
              */
-            virtual void acceptSettings() = 0;
+            virtual auto acceptSettings() -> void = 0;
     };
 }
 

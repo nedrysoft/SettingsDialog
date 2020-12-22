@@ -42,7 +42,7 @@ namespace Nedrysoft::SettingsDialog {
              *
              * @param[in]   event the event.
              */
-            void paintEvent(QPaintEvent *event) override;
+            auto paintEvent(QPaintEvent *event) -> void override;
     };
 }
 

@@ -35,7 +35,7 @@ Nedrysoft::Utils::ThemeSupport::ThemeSupport() {
     });
 }
 
-bool Nedrysoft::Utils::ThemeSupport::isDarkMode() {
+auto Nedrysoft::Utils::ThemeSupport::isDarkMode() -> bool {
     NSAppearance *appearance = nullptr;
 
     if (@available(macOS 11, *)) {
@@ -59,11 +59,11 @@ bool Nedrysoft::Utils::ThemeSupport::isDarkMode() {
     }
 }
 
-QColor Nedrysoft::Utils::ThemeSupport::getColor(const QRgb colourPair[]) {
+auto Nedrysoft::Utils::ThemeSupport::getColor(const QRgb colourPair[]) -> QColor {
     return QColor(colourPair[isDarkMode() ? 1 : 0]);
 }
 
-QColor Nedrysoft::Utils::ThemeSupport::getHighlightedBackground() {
+auto Nedrysoft::Utils::ThemeSupport::getHighlightedBackground() -> QColor {
 #if defined(Q_OS_MACOS)
     CGColorRef a = [NSColor systemBlueColor].CGColor;
 
@@ -75,7 +75,7 @@ QColor Nedrysoft::Utils::ThemeSupport::getHighlightedBackground() {
 #endif
 }
 
-QString Nedrysoft::Utils::ThemeSupport::theme() {
+auto Nedrysoft::Utils::ThemeSupport::theme() -> QString {
     if (isDarkMode()) {
         return QStringLiteral("dark");
     }
@@ -83,6 +83,6 @@ QString Nedrysoft::Utils::ThemeSupport::theme() {
     return QStringLiteral("light");
 }
 
-QString Nedrysoft::Utils::ThemeSupport::themedString(QString string) {
+auto Nedrysoft::Utils::ThemeSupport::themedString(QString string) -> QString {
     return string.replace("[theme]", theme());
 }

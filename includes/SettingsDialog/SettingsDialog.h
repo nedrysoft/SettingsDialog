@@ -102,14 +102,14 @@ namespace Nedrysoft::SettingsDialog {
              *
              * @param[in]   event the event information.
              */
-            void closeEvent(QCloseEvent *event) override;
+            auto closeEvent(QCloseEvent *event) -> void override;
 
             /**
              * @brief       Returns the recommended size for the widget.
              *
              * @returns     the size of the widget.
              */
-            const QSize sizeHint();
+            auto sizeHint() -> const QSize;
 
         private:
             /**

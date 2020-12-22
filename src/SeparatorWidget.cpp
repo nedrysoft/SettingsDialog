@@ -28,7 +28,7 @@
 constexpr auto lineMargin = 25;
 constexpr auto lineColour = qRgb(0x60, 0x60, 0x60);
 
-void Nedrysoft::SettingsDialog::SeparatorWidget::paintEvent(QPaintEvent *event) {
+auto Nedrysoft::SettingsDialog::SeparatorWidget::paintEvent(QPaintEvent *event) -> void {
     QPoint centrePoint = rect().center();
 
     QPainter painter(this);
