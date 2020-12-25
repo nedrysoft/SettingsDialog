@@ -24,20 +24,26 @@
 #include "SettingsDialog/SettingsDialog.h"
 
 #include "SettingsDialog/ISettingsPage.h"
-#include "TransparentWidget.h"
 #include "SeparatorWidget.h"
+
+#if defined(Q_OS_MACOS)
+#include "TransparentWidget.h"
+#endif
 
 #include <QGroupBox>
 
 #if defined(Q_OS_MACOS)
 #include <QtMac>
 #include <QMacToolBar>
+#else
+#include <QGraphicsOpacityEffect>
+#include <QLabel>
+#include <QPropertyAnimation>
+#include <QPushButton>
+#include <QStackedWidget>
 #endif
 
 #include <QApplication>
-#include <QGraphicsOpacityEffect>
-#include <QParallelAnimationGroup>
-#include <QPropertyAnimation>
 #include <QResizeEvent>
 #include <QTreeWidget>
 #include <QVBoxLayout>
@@ -59,17 +65,19 @@ constexpr auto categoryFontAdjustment = 6;
 constexpr auto settingsTreeWidth = 144;
 constexpr auto settingsIconSize = 32;
 constexpr auto settingsDialogScaleFactor = 0.5;
+constexpr auto categoryLeftMargin = 4;
+constexpr auto categoryBottomMargin = 9;
+constexpr auto detailsLeftMargin = 9;
 #endif
 
-Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(QList<Nedrysoft::SettingsDialog::ISettingsPage *> pages, QWidget *parent) :
-        QWidget(nullptr) {
+Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft::SettingsDialog::ISettingsPage *> &pages, QWidget *parent) :
+        QWidget(nullptr),
+        m_currentPage(nullptr) {
 
     Q_UNUSED(parent)
 
 #if defined(Q_OS_MACOS)
-    m_currentPage = nullptr;
-
-    m_toolBar = new QMacToolBar(this);
+ m_toolBar = new QMacToolBar(this);
 
     m_animationGroup = nullptr;
 #else
@@ -101,14 +109,14 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(QList<Nedrysoft::Setti
 
     m_categoryLabel = new QLabel;
 
-    m_categoryLabel->setContentsMargins(4,0,0,9);
+    m_categoryLabel->setContentsMargins(categoryLeftMargin,0,0,categoryBottomMargin);
 
     m_categoryLabel->setFont(QFont(m_categoryLabel->font().family(), m_categoryLabel->font().pointSize()+categoryFontAdjustment));
     m_categoryLabel->setAlignment(Qt::AlignLeft);
 
     m_detailLayout = new QVBoxLayout;
 
-    m_detailLayout->setContentsMargins(9,0,0,0);
+    m_detailLayout->setContentsMargins(detailsLeftMargin,0,0,0);
 
     m_detailLayout->addWidget(m_categoryLabel);
 
@@ -216,7 +224,7 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(QList<Nedrysoft::Setti
 #endif
 }
 
-auto Nedrysoft::SettingsDialog::SettingsDialog::sizeHint() -> const QSize {
+auto Nedrysoft::SettingsDialog::SettingsDialog::sizeHint() -> QSize {
     if (m_currentPage) {
         return m_currentPage->m_widget->sizeHint();
     }
@@ -246,17 +254,18 @@ Nedrysoft::SettingsDialog::SettingsDialog::~SettingsDialog() {
 }
 
 auto Nedrysoft::SettingsDialog::SettingsDialog::okToClose() -> bool {
-#if !defined(Q_OS_MACOS)
     auto acceptable = true;
 
+#if !defined(Q_OS_MACOS)
     for(auto page : m_pages) {
         if (!page->m_pageSettings->canAcceptSettings()) {
             acceptable = false;
+
             break;
         }
     }
 #endif
-    return true;
+    return acceptable;
 }
 
 
@@ -429,7 +438,7 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
         m_treeWidget->addTopLevelItem(treeItem);
 
         connect(m_treeWidget, &QTreeWidget::currentItemChanged, [=](QTreeWidgetItem *current, QTreeWidgetItem *previous) {
-            Q_UNUSED(previous);
+            Q_UNUSED(previous)
 
             auto widget = current->data(0, Qt::UserRole).value<QWidget *>();
 
@@ -440,8 +449,8 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
         });
     }
 
-    QWidget *widget = new QWidget;
-    QVBoxLayout *widgetLayout = new QVBoxLayout;
+    auto widget = new QWidget;
+    auto widgetLayout = new QVBoxLayout;
 
     widgetLayout->addWidget(page->widget());
     widgetLayout->addSpacerItem(new QSpacerItem(0,0, QSizePolicy::Preferred, QSizePolicy::Expanding));

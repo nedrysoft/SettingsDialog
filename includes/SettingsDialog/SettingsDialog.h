@@ -77,6 +77,8 @@ namespace Nedrysoft::SettingsDialog {
         private:
             Q_OBJECT
 
+            Q_DISABLE_COPY_MOVE(SettingsDialog)
+
         public:
             /**
              * @brief       Constructs a new SettingsDialog instance which is a child of the parent.
@@ -84,12 +86,12 @@ namespace Nedrysoft::SettingsDialog {
              * @param[in]   pages the pages to be displayed.
              * @param[in]   parent is the the owner of the child.
              */
-            explicit SettingsDialog(QList<ISettingsPage *> pages, QWidget *parent=nullptr);
+            explicit SettingsDialog(const QList<ISettingsPage *> &pages, QWidget *parent=nullptr);
 
             /**
              * @brief       Destroys the SettingsDialog.
              */
-            ~SettingsDialog();
+            ~SettingsDialog() override;
 
             /**
              * @brief       This signal is emitted when the window is closed by the user.
@@ -109,7 +111,7 @@ namespace Nedrysoft::SettingsDialog {
              *
              * @returns     the size of the widget.
              */
-            auto sizeHint() -> const QSize;
+            auto sizeHint() -> QSize;
 
         private:
             /**
@@ -117,14 +119,14 @@ namespace Nedrysoft::SettingsDialog {
              *
              * @returns     The QWindow handle of the native window.
              */
-            QWindow *nativeWindowHandle();
+            auto nativeWindowHandle() -> QWindow *;
 
             /**
              * @brief       Checks if the settings dialog can be closed.
              *
              * @returns     true if closable; otherwise false.
              */
-            bool okToClose();
+            auto okToClose() -> bool;
 
         protected:
             /**
@@ -132,7 +134,7 @@ namespace Nedrysoft::SettingsDialog {
              *
              * @param[in]   event the event information.
              */
-            void resizeEvent(QResizeEvent *event) override;
+            auto resizeEvent(QResizeEvent *event) -> void override;
 
             /**
              * @brief       Adds a setting page to the settings dialog.
@@ -141,7 +143,7 @@ namespace Nedrysoft::SettingsDialog {
              *
              * @returns     the settings page structure
              */
-            SettingsPage *addPage(ISettingsPage *page);
+            auto addPage(ISettingsPage *page) -> SettingsPage *;
 
         private:
 #if defined(Q_OS_MACOS)
@@ -158,8 +160,8 @@ namespace Nedrysoft::SettingsDialog {
             QTreeWidget *m_treeWidget;                          //! tree widget for categories
             QStackedWidget *m_stackedWidget;                    //! stacked widget for page content
             QLabel *m_categoryLabel;                            //! category label
-            QPushButton *m_okButton;                            //! ok button, saves and dismisses the dialog (if changes valud)
-            QPushButton *m_cancelButton;                        //! cancel button, fogets any changes made since last apply
+            QPushButton *m_okButton;                            //! ok button, saves and dismisses the dialog (if changes valid)
+            QPushButton *m_cancelButton;                        //! cancel button, forgets any changes made since last apply
             QPushButton *m_applyButton;                         //! apply button, saves changes but keeps dialog open
             QList<SettingsPage *> m_pages;
 #endif
