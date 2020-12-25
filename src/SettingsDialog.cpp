@@ -33,12 +33,12 @@
 #include <QGroupBox>
 
 #if defined(Q_OS_MACOS)
-#include <QtMac>
-#include <QMacToolBar>
-#else
 #include <QGraphicsOpacityEffect>
-#include <QLabel>
+#include <QMacToolBar>
 #include <QPropertyAnimation>
+#include <QtMac>
+#else
+#include <QLabel>
 #include <QPushButton>
 #include <QStackedWidget>
 #endif
