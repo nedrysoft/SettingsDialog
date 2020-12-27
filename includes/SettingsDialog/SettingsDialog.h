@@ -29,6 +29,7 @@
 #include <QIcon>
 #include <QList>
 #include <QMap>
+#include <QString>
 #include <QWidget>
 
 #if defined(Q_OS_MACOS)
@@ -53,16 +54,33 @@ namespace Nedrysoft::SettingsDialog {
      */
     class SettingsPage {
         public:
+            SettingsPage() :
+#if defined(Q_OS_MACOS)
+                m_toolBarItem(nullptr)
+#endif
+                m_widget(nullptr),
+                m_pageSettings(nullptr) {
+
+                }
+
+            ~SettingsPage() {
+#if defined(Q_OS_MACOS)
+                if (m_toolBarItem) {
+                    delete m_toolBarItem;
+                }
+#endif
+            }
+        public:
             QString m_name;                     //! display name of the settings category page
             QString m_description;              //! description of the settings category page
 #if defined(Q_OS_MACOS)
             TransparentWidget *m_widget;        //! the widget that contains the settings for this category
+            QMacToolBarItem *m_toolBarItem;     //! toolbar item
 #else
             QWidget *m_widget;                  //! the widget that contains the settings for this category
 #endif
             ISettingsPage *m_pageSettings;      //! pointer to the page interface
             QIcon m_icon;                       //! the icon of the page
-            QMacToolBarItem *m_toolBarItem;     //! toolbar item
     };
 
     /**
@@ -166,6 +184,8 @@ namespace Nedrysoft::SettingsDialog {
             QList<SettingsPage *> m_pages;
 #endif
             SettingsPage *m_currentPage;                        //! current widget
+            QList<QWidget *> m_settingsPages;
+
     };
 }
 

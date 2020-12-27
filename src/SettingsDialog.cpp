@@ -194,7 +194,7 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
 #endif
 
     for (auto page: pages) {
-        addPage(page);
+        m_pages.append(addPage(page));
     }
 
 #if defined(Q_OS_MACOS)
@@ -234,23 +234,14 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::sizeHint() -> QSize {
 
 Nedrysoft::SettingsDialog::SettingsDialog::~SettingsDialog() {
 #if defined(Q_OS_MACOS)
-    m_toolBar->deleteLater();
-
-    for(auto page : m_pages) {
-        page->m_widget->deleteLater();
-
-        delete page;
-    }
-#else
-    m_layout->deleteLater();
-    m_treeWidget->deleteLater();
-    m_categoryLabel->deleteLater();
-    m_stackedWidget->deleteLater();
-
-    for(auto page : m_pages) {
-        delete page;
-    }
+    delete m_toolBar;
 #endif
+    delete m_layout;
+    delete m_treeWidget;
+    delete m_categoryLabel;
+    delete m_stackedWidget;
+
+    qDeleteAll(m_pages);
 }
 
 auto Nedrysoft::SettingsDialog::SettingsDialog::okToClose() -> bool {
@@ -424,8 +415,6 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
         }
     }
 
-    //QTreeWidgetItem *treeItem = nullptr;
-
     if (!tabWidget) {
         auto treeItem = new QTreeWidgetItem(m_treeWidget);
         tabWidget = new QTabWidget();
@@ -456,7 +445,6 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
     widgetLayout->addSpacerItem(new QSpacerItem(0,0, QSizePolicy::Preferred, QSizePolicy::Expanding));
 
     widget->setLayout(widgetLayout);
-
 
     tabWidget->addTab(widget, page->category());
 
