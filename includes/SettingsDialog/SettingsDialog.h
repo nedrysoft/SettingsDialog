@@ -56,20 +56,13 @@ namespace Nedrysoft::SettingsDialog {
         public:
             SettingsPage() :
 #if defined(Q_OS_MACOS)
-                m_toolBarItem(nullptr)
+                m_toolBarItem(nullptr),
 #endif
                 m_widget(nullptr),
                 m_pageSettings(nullptr) {
 
                 }
 
-            ~SettingsPage() {
-#if defined(Q_OS_MACOS)
-                if (m_toolBarItem) {
-                    delete m_toolBarItem;
-                }
-#endif
-            }
         public:
             QString m_name;                     //! display name of the settings category page
             QString m_description;              //! description of the settings category page
@@ -184,7 +177,7 @@ namespace Nedrysoft::SettingsDialog {
             QList<SettingsPage *> m_pages;
 #endif
             SettingsPage *m_currentPage;                        //! current widget
-            QList<QWidget *> m_settingsPages;
+
 
     };
 }

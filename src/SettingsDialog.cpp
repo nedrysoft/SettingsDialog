@@ -77,7 +77,7 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
     Q_UNUSED(parent)
 
 #if defined(Q_OS_MACOS)
- m_toolBar = new QMacToolBar(this);
+    m_toolBar = new QMacToolBar(this);
 
     m_animationGroup = nullptr;
 #else
@@ -194,7 +194,13 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
 #endif
 
     for (auto page: pages) {
+        auto settingsPage = addPage(page);
+#if defined(Q_OS_MACOS)
+        m_pages[settingsPage->m_toolBarItem] = settingsPage;
+#else
         m_pages.append(addPage(page));
+
+#endif
     }
 
 #if defined(Q_OS_MACOS)
@@ -235,11 +241,12 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::sizeHint() -> QSize {
 Nedrysoft::SettingsDialog::SettingsDialog::~SettingsDialog() {
 #if defined(Q_OS_MACOS)
     delete m_toolBar;
-#endif
+#else
     delete m_layout;
     delete m_treeWidget;
     delete m_categoryLabel;
     delete m_stackedWidget;
+#endif
 
     qDeleteAll(m_pages);
 }
@@ -319,8 +326,6 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
     }
 
     settingsPage->m_toolBarItem = m_toolBar->addItem(page->icon(), page->section());
-
-    m_pages[settingsPage->m_toolBarItem] = settingsPage;
 
     connect(settingsPage->m_toolBarItem, &QMacToolBarItem::activated, this, [this, settingsPage]() {
         if (!m_currentPage) {
