@@ -194,8 +194,9 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
 #endif
 
     for (auto page: pages) {
-        auto settingsPage = addPage(page);
 #if defined(Q_OS_MACOS)
+        auto settingsPage = addPage(page);
+
         m_pages[settingsPage->m_toolBarItem] = settingsPage;
 #else
         m_pages.append(addPage(page));
