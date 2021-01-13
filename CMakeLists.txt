@@ -45,9 +45,9 @@ set(library_SOURCES
     src/SettingsDialog.cpp
 )
 
-find_package(Qt5 COMPONENTS Widgets REQUIRED)
+find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
 
-set(Qt_LIBS Qt5::Widgets)
+set(Qt_LIBS Qt5::Core Qt5::Widgets)
 
 if(APPLE)
     find_package(Qt5 COMPONENTS MacExtras REQUIRED)
