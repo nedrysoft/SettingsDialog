@@ -1,7 +1,7 @@
 #
 # Copyright (C) 2020 Adrian Carpenter
 #
-# This file is part of the Nedrysoft SettingsDialog. (https://github.com/fizzyade/SettingsDialog)
+# This file is part of the Nedrysoft SettingsDialog. (https://github.com/nedrysoft/SettingsDialog)
 #
 # A cross-platform settings dialog
 #
