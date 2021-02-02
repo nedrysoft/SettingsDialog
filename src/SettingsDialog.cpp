@@ -30,8 +30,6 @@
 #include "TransparentWidget.h"
 #endif
 
-#include <QGroupBox>
-
 #if defined(Q_OS_MACOS)
 #include <QGraphicsOpacityEffect>
 #include <QMacToolBar>
@@ -44,6 +42,7 @@
 #endif
 
 #include <QApplication>
+#include <QDesktopWidget>
 #include <QResizeEvent>
 #include <QTreeWidget>
 #include <QVBoxLayout>
@@ -59,7 +58,7 @@ constexpr auto transisionDuration = 100ms;
 constexpr auto toolbarItemWidth = 64;
 constexpr auto alphaTransparent = 0;
 constexpr auto alphaOpaque = 1;
-constexpr auto defaultMinimumWidth = 600;
+constexpr auto defaultMinimumWidth = 900;
 #else
 constexpr auto categoryFontAdjustment = 6;
 constexpr auto settingsTreeWidth = 144;
@@ -194,6 +193,7 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
 #endif
 
     for (auto page: pages) {
+        page->initialise();
 #if defined(Q_OS_MACOS)
         auto settingsPage = addPage(page);
 
@@ -218,6 +218,8 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
     m_toolbarHeight = frameGeometry().size().height()-geometry().size().height();
     m_maximumWidth = size.width();
 
+    auto maximumHeight = 0;
+
     if (m_pages.first()) {
         m_currentPage = m_pages.first();
 
@@ -226,8 +228,22 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
         setMinimumSize(QSize(m_maximumWidth, m_currentPage->m_widget->sizeHint().height()));
         setMaximumSize(QSize(m_maximumWidth, m_currentPage->m_widget->sizeHint().height()));
 
+        if (m_currentPage->m_widget->sizeHint().height()>maximumHeight) {
+            maximumHeight = m_currentPage->m_widget->sizeHint().height();
+        }
+
         this->setWindowTitle(m_currentPage->m_name);
     }
+
+    // this uses qApp->desktop()->rect() which is the union of all screen geometries in the case of multiple
+    // screens.
+
+    setGeometry(QStyle::alignedRect(
+                    Qt::LeftToRight,
+                    Qt::AlignCenter,
+                    QSize(m_maximumWidth, maximumHeight),
+                    qApp->desktop()->rect() ));
+
 #endif
 }
 

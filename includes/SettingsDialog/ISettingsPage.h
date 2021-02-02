@@ -86,6 +86,11 @@ namespace Nedrysoft::SettingsDialog {
              * @brief       Applies the current settings.
              */
             virtual auto acceptSettings() -> void = 0;
+
+            /**
+             * @brief       Initialises the page.
+             */
+            virtual auto initialise() -> void = 0;
     };
 }
 
