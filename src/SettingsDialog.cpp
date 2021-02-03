@@ -351,8 +351,11 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
 
             resize(m_currentPage->m_widget->sizeHint());
 
+            this->setWindowTitle(settingsPage->m_name);
+
             return;
         }
+
         auto currentItem = m_pages[m_currentPage->m_toolBarItem]->m_widget;
         auto nextItem = settingsPage->m_widget;
 
@@ -404,10 +407,12 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
 
         m_currentPage = settingsPage;
 
-        connect(m_animationGroup, &QParallelAnimationGroup::finished, [this]() {
+        connect(m_animationGroup, &QParallelAnimationGroup::finished, [this, settingsPage]() {
             m_animationGroup->deleteLater();
 
             m_animationGroup = nullptr;
+
+            this->setWindowTitle(settingsPage->m_name);
         });
     });
 
