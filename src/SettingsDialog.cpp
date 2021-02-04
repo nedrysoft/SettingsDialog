@@ -58,7 +58,7 @@ constexpr auto transisionDuration = 100ms;
 constexpr auto toolbarItemWidth = 64;
 constexpr auto alphaTransparent = 0;
 constexpr auto alphaOpaque = 1;
-constexpr auto defaultMinimumWidth = 900;
+constexpr auto defaultMinimumWidth = 300;
 #else
 constexpr auto categoryFontAdjustment = 6;
 constexpr auto settingsTreeWidth = 144;
