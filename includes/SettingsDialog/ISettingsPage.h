@@ -69,11 +69,11 @@ namespace Nedrysoft::SettingsDialog {
             virtual auto icon() -> QIcon = 0;
 
             /**
-             * @brief       The widget for the page.
+             * @brief       Creates a new instance of the page widget.
              *
-             * @returns     a widget.
+             * @returns     the new widget instance.
              */
-            virtual auto widget() -> QWidget * = 0;
+            virtual auto createWidget() -> QWidget * = 0;
 
             /**
              * @brief       Checks if the settings can be applied.
@@ -86,11 +86,6 @@ namespace Nedrysoft::SettingsDialog {
              * @brief       Applies the current settings.
              */
             virtual auto acceptSettings() -> void = 0;
-
-            /**
-             * @brief       Initialises the page.
-             */
-            virtual auto initialise() -> void = 0;
     };
 }
 

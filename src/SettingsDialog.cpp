@@ -193,7 +193,6 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
 #endif
 
     for (auto page: pages) {
-        page->initialise();
 #if defined(Q_OS_MACOS)
         auto settingsPage = addPage(page);
 
@@ -264,8 +263,6 @@ Nedrysoft::SettingsDialog::SettingsDialog::~SettingsDialog() {
     delete m_categoryLabel;
     delete m_stackedWidget;
 #endif
-
-    qDeleteAll(m_pages);
 }
 
 auto Nedrysoft::SettingsDialog::SettingsDialog::okToClose() -> bool {
@@ -324,7 +321,9 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
         widgetContainer->addWidget(new SeparatorWidget);
     }
 
-    widgetContainer->addWidget(page->widget());
+    auto pageWidget = page->createWidget();
+
+    widgetContainer->addWidget(pageWidget);
 
     if (settingsPage) {
         return settingsPage;
@@ -338,8 +337,8 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
     settingsPage->m_icon = page->icon();
     settingsPage->m_description = page->description();
 
-    if (page->widget()->layout()) {
-        page->widget()->layout()->setSizeConstraint(QLayout::SetMinimumSize);
+    if (pageWidget->layout()) {
+        pageWidget->layout()->setSizeConstraint(QLayout::SetMinimumSize);
     }
 
     settingsPage->m_toolBarItem = m_toolBar->addItem(page->icon(), page->section());
@@ -416,18 +415,6 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
         });
     });
 
-    /*if (defaultPage) {
-        if (m_currentPage) {
-            m_currentPage->m_widget->setTransparency(0);
-        }
-
-        m_currentPage = settingsPage;
-
-        m_currentPage->m_widget->setTransparency(1);
-
-        resize(m_currentPage->m_widget->sizeHint());
-    }*/
-
     return settingsPage;
 #else
     QTabWidget *tabWidget = nullptr;
@@ -467,8 +454,9 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
 
     auto widget = new QWidget;
     auto widgetLayout = new QVBoxLayout;
+    auto pageWidget = page->widget();
 
-    widgetLayout->addWidget(page->widget());
+    widgetLayout->addWidget(pageWidget);
     widgetLayout->addSpacerItem(new QSpacerItem(0,0, QSizePolicy::Preferred, QSizePolicy::Expanding));
 
     widget->setLayout(widgetLayout);
@@ -480,7 +468,7 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
     auto settingsPage = new SettingsPage;
 
     settingsPage->m_name = page->section();
-    settingsPage->m_widget = page->widget();
+    settingsPage->m_widget = pageWidget;
     settingsPage->m_pageSettings = page;
     settingsPage->m_icon = page->icon();
     settingsPage->m_description = page->description();
@@ -496,6 +484,8 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::closeEvent(QCloseEvent *event) -
         }
 
         event->accept();
+
+        Q_EMIT closed();
     } else {
         event->ignore();
     }
