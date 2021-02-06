@@ -280,7 +280,6 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::okToClose() -> bool {
     return acceptable;
 }
 
-
 auto Nedrysoft::SettingsDialog::SettingsDialog::resizeEvent(QResizeEvent *event) -> void {
     for(auto page : m_pages) {
         if (page->m_widget) {
