@@ -453,7 +453,7 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
 
     auto widget = new QWidget;
     auto widgetLayout = new QVBoxLayout;
-    auto pageWidget = page->widget();
+    auto pageWidget = page->createWidget();
 
     widgetLayout->addWidget(pageWidget);
     widgetLayout->addSpacerItem(new QSpacerItem(0,0, QSizePolicy::Preferred, QSizePolicy::Expanding));
