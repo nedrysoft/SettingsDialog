@@ -21,6 +21,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QDebug>
 #include "SettingsDialog/SettingsDialog.h"
 
 #include "SettingsDialog/ISettingsPage.h"
@@ -61,7 +62,6 @@ constexpr auto alphaOpaque = 1;
 constexpr auto defaultMinimumWidth = 300;
 #else
 constexpr auto categoryFontAdjustment = 6;
-constexpr auto settingsTreeWidth = 144;
 constexpr auto settingsIconSize = 32;
 constexpr auto settingsDialogScaleFactor = 0.5;
 constexpr auto categoryLeftMargin = 4;
@@ -88,15 +88,13 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
 
     m_treeWidget->setIndentation(0);
 
-    m_treeWidget->setMinimumWidth(settingsTreeWidth);
-    m_treeWidget->setMaximumWidth(settingsTreeWidth);
     m_treeWidget->setIconSize(QSize(settingsIconSize, settingsIconSize));
 
     m_treeWidget->setHeaderHidden(true);
 
     m_treeWidget->setSelectionBehavior(QTreeWidget::SelectRows);
 
-    m_treeWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+    m_treeWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     m_stackedWidget = new QStackedWidget;
 
@@ -192,16 +190,34 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
     setLayout(m_layout);
 #endif
 
+    int listWidth = 0;
+
     for (auto page: pages) {
 #if defined(Q_OS_MACOS)
         auto settingsPage = addPage(page);
 
         m_pages[settingsPage->m_toolBarItem] = settingsPage;
 #else
-        m_pages.append(addPage(page));
+        auto settingsPage = addPage(page);
 
+        m_pages.append(settingsPage);
 #endif
     }
+
+    for (auto currentIndex=0;currentIndex<m_treeWidget->topLevelItemCount();currentIndex++) {
+        auto item = m_treeWidget->topLevelItem(currentIndex);
+
+        auto fontMetrics = QFontMetrics(m_treeWidget->font());
+
+        auto width = fontMetrics.boundingRect(item->text(0)).width();
+
+        if (width>listWidth) {
+            listWidth = width;
+        }
+    }
+
+    m_treeWidget->setMinimumWidth(listWidth+(settingsIconSize*2));
+    m_treeWidget->setMaximumWidth(listWidth+(settingsIconSize*2));
 
 #if defined(Q_OS_MACOS)
     m_toolBar->attachToWindow(nativeWindowHandle());
@@ -242,7 +258,6 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
                     Qt::AlignCenter,
                     QSize(m_maximumWidth, maximumHeight),
                     qApp->desktop()->rect() ));
-
 #endif
 }
 
@@ -283,7 +298,17 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::okToClose() -> bool {
 auto Nedrysoft::SettingsDialog::SettingsDialog::resizeEvent(QResizeEvent *event) -> void {
     for(auto page : m_pages) {
         if (page->m_widget) {
-            page->m_widget->resize(event->size());
+#if defined(Q_OS_MACOS)
+            page->m_widget->resize((event->size()));
+#else
+            // resizing needs to account for the category label & margins
+
+            auto margins = m_layout->contentsMargins();
+
+            auto adjustment = margins.bottom()+m_categoryLabel->height()+m_layout->spacing();
+
+            page->m_widget->resize(m_stackedWidget->size()-QSize(margins.right(), adjustment));
+#endif
         }
     }
 }
@@ -430,6 +455,7 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
 
     if (!tabWidget) {
         auto treeItem = new QTreeWidgetItem(m_treeWidget);
+
         tabWidget = new QTabWidget();
 
         treeItem->setIcon(0, page->icon());
