@@ -204,6 +204,7 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
 #endif
     }
 
+#if !defined(Q_OS_MACOS)
     for (auto currentIndex=0;currentIndex<m_treeWidget->topLevelItemCount();currentIndex++) {
         auto item = m_treeWidget->topLevelItem(currentIndex);
 
@@ -218,6 +219,7 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
 
     m_treeWidget->setMinimumWidth(listWidth+(settingsIconSize*2));
     m_treeWidget->setMaximumWidth(listWidth+(settingsIconSize*2));
+#endif
 
 #if defined(Q_OS_MACOS)
     m_toolBar->attachToWindow(nativeWindowHandle());
