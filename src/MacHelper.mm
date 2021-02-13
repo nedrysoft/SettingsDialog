@@ -25,7 +25,7 @@
 
 #include <QDialog>
 
-#import <Appkit/AppKit.h>
+#import <AppKit/AppKit.h>
 
 constexpr auto bitsPerPixel = 8;
 constexpr auto samplesPerPixel = 4;
