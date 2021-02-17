@@ -135,7 +135,7 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
 
     m_okButton = new QPushButton(tr("OK"));
     m_cancelButton = new QPushButton(tr("Cancel"));
-    m_applyButton = new QPushButton(tr("Apply)"));
+    m_applyButton = new QPushButton(tr("Apply"));
 
     connect(m_okButton, &QPushButton::clicked, [=](bool /*checked*/) {
         bool settingsValid = true;
