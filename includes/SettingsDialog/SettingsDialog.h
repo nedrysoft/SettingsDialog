@@ -88,8 +88,8 @@ namespace Nedrysoft::SettingsDialog {
         private:
             Q_OBJECT
 
-            Q_DISABLE_COPY(SettingsDialog)
-            Q_DISABLE_MOVE(SettingsDialog)
+            //Q_DISABLE_COPY(SettingsDialog)
+            //Q_DISABLE_MOVE(SettingsDialog)
 
         public:
             /**
