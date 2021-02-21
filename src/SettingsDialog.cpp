@@ -138,47 +138,16 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
     m_applyButton = new QPushButton(tr("Apply"));
 
     connect(m_okButton, &QPushButton::clicked, [=](bool /*checked*/) {
-        bool settingsValid = true;
-
-        for(auto page : m_pages) {
-            if (!page->m_pageSettings->canAcceptSettings()) {
-                settingsValid = false;
-                break;
-            }
-        }
-
-        if (!settingsValid) {
-            //TODO go to page with error
-        } else {
-            for(auto page : m_pages) {
-                page->m_pageSettings->acceptSettings();
-            }
-
-            close();
-        }
+        acceptSettings();
+        close();
     });
 
     connect(m_applyButton, &QPushButton::clicked, [=](bool /*checked*/) {
-        bool settingsValid = true;
-
-        for(auto page : m_pages) {
-            if (!page->m_pageSettings->canAcceptSettings()) {
-                settingsValid = false;
-                break;
-            }
-        }
-
-        if (!settingsValid) {
-            //TODO go to page with error
-        } else {
-            for(auto page : m_pages) {
-                page->m_pageSettings->acceptSettings();
-            }
-        }
+        acceptSettings();
     });
 
     connect(m_cancelButton, &QPushButton::clicked, [=](bool /*checked*/) {
-       close();
+        close();
     });
 
     m_controlsLayout->addWidget(m_okButton);
@@ -506,14 +475,33 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
 
 auto Nedrysoft::SettingsDialog::SettingsDialog::closeEvent(QCloseEvent *event) -> void {
     if (okToClose()) {
-        for (auto page : m_pages) {
-            page->m_pageSettings->acceptSettings();
-        }
-
         event->accept();
 
         Q_EMIT closed();
     } else {
         event->ignore();
     }
+}
+
+auto Nedrysoft::SettingsDialog::SettingsDialog::acceptSettings() -> bool {
+    bool settingsValid = true;
+
+    for(auto page : m_pages) {
+        if (!page->m_pageSettings->canAcceptSettings()) {
+            settingsValid = false;
+            break;
+        }
+    }
+
+    if (!settingsValid) {
+        //TODO go to page with error
+    } else {
+        for(auto page : m_pages) {
+            page->m_pageSettings->acceptSettings();
+        }
+
+        return true;
+    }
+
+    return false;
 }

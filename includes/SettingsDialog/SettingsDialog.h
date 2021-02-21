@@ -140,6 +140,13 @@ namespace Nedrysoft::SettingsDialog {
              */
             auto okToClose() -> bool;
 
+            /**
+             * @brief       Accept all settings that have been modified.
+             *
+             * @returns     true if settings were accepted; otherwise false.
+             */
+            auto acceptSettings() -> bool;
+
         protected:
             /**
              * @brief       Reimplements: QWidget::resizeEvent(QResizeEvent *event).
