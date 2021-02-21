@@ -475,6 +475,9 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
 
 auto Nedrysoft::SettingsDialog::SettingsDialog::closeEvent(QCloseEvent *event) -> void {
     if (okToClose()) {
+#if defined(Q_OS_MACOS)
+        acceptSettings();
+#endif
         event->accept();
 
         Q_EMIT closed();
