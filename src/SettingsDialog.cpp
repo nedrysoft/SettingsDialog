@@ -321,6 +321,9 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
     widgetContainer->addWidget(pageWidget);
 
     if (settingsPage) {
+#if defined(Q_OS_MACOS)
+        settingsPage->m_pageSettings.append(page);
+#endif
         return settingsPage;
     }
 
@@ -328,7 +331,11 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
 
     settingsPage->m_name = page->section();
     settingsPage->m_widget = widgetContainer;
+#if defined(Q_OS_MACOS)
+    settingsPage->m_pageSettings.append(page);
+#else
     settingsPage->m_pageSettings = page;
+#endif
     settingsPage->m_icon = page->icon();
     settingsPage->m_description = page->description();
 
@@ -489,7 +496,30 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::closeEvent(QCloseEvent *event) -
 auto Nedrysoft::SettingsDialog::SettingsDialog::acceptSettings() -> bool {
     bool settingsValid = true;
 
+#if defined(Q_OS_MACOS)
     for(auto page : m_pages) {
+        for (auto section : page->m_pageSettings) {
+            if (!section->canAcceptSettings()) {
+                settingsValid = false;
+                break;
+            }
+        }
+    }
+
+    if (!settingsValid) {
+        //TODO go to page with error
+    } else {
+        for(auto page : m_pages) {
+            for (auto section : page->m_pageSettings) {
+                section->acceptSettings();
+            }
+        }
+
+        return true;
+    }
+#else
+    for(auto page : m_pages) {
+
         if (!page->m_pageSettings->canAcceptSettings()) {
             settingsValid = false;
             break;
@@ -505,6 +535,6 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::acceptSettings() -> bool {
 
         return true;
     }
-
+#endif
     return false;
 }

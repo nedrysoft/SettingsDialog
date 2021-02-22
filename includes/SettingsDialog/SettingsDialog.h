@@ -57,23 +57,28 @@ namespace Nedrysoft::SettingsDialog {
             SettingsPage() :
 #if defined(Q_OS_MACOS)
                 m_toolBarItem(nullptr),
+                m_pageSettings(QList<ISettingsPage *>()),
+#else
+                m_pageSettings(nullptr),
 #endif
-                m_widget(nullptr),
-                m_pageSettings(nullptr) {
+                m_widget(nullptr)
+                {
 
                 }
 
         public:
-            QString m_name;                     //! display name of the settings category page
-            QString m_description;              //! description of the settings category page
+            QString m_name;                             //! display name of the settings category page
+            QString m_description;                      //! description of the settings category page
 #if defined(Q_OS_MACOS)
-            TransparentWidget *m_widget;        //! the widget that contains the settings for this category
-            QMacToolBarItem *m_toolBarItem;     //! toolbar item
+            TransparentWidget *m_widget;                //! the widget that contains the settings for this category
+            QMacToolBarItem *m_toolBarItem;             //! toolbar item
+            QList<ISettingsPage *> m_pageSettings;      //! pointer to the page interfaces
 #else
-            QWidget *m_widget;                  //! the widget that contains the settings for this category
+            QWidget *m_widget;                          //! the widget that contains the settings for this category
+            ISettingsPage *m_pageSettings;              //! pointer to the page interface
 #endif
-            ISettingsPage *m_pageSettings;      //! pointer to the page interface
-            QIcon m_icon;                       //! the icon of the page
+
+            QIcon m_icon;                               //! the icon of the page
     };
 
     /**
