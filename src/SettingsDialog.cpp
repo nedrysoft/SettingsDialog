@@ -244,6 +244,9 @@ Nedrysoft::SettingsDialog::SettingsDialog::~SettingsDialog() {
 #if defined(Q_OS_MACOS)
     delete m_toolBar;
 #else
+    for (auto page : m_pages) {
+        delete page;
+    }
     delete m_layout;
     delete m_treeWidget;
     delete m_categoryLabel;
