@@ -32,24 +32,28 @@ constexpr auto samplesPerPixel = 4;
 constexpr auto systemFontSize = 12;
 
 void Nedrysoft::MacHelper::enablePreferencesToolbar(QWidget *window) {
-    auto nativeView = reinterpret_cast<NSView *>(window->winId());
+    if (@available(macOS 11, *)) {
+        auto nativeView = reinterpret_cast<NSView *>(window->winId());
 
-    if (!nativeView) {
-        return;
-    }
+        if (!nativeView) {
+            return;
+        }
 
-    Q_ASSERT_X([nativeView isKindOfClass:[NSView class]], static_cast<const char *>(__FUNCTION__), "Object was not a NSView");
+        Q_ASSERT_X([nativeView isKindOfClass:[NSView class]], static_cast<const char *>(__FUNCTION__),
+                   "Object was not a NSView");
 
-    auto nativeWindow = [nativeView window];
+        auto nativeWindow = [nativeView window];
 
-    if (nativeWindow==nil) {
-        return;
-    }
+        if (nativeWindow == nil) {
+            return;
+        }
 
-    Q_ASSERT_X([nativeWindow isKindOfClass:[NSWindow class]], static_cast<const char *>(__FUNCTION__), "Object was not a NSWindow");
+        Q_ASSERT_X([nativeWindow isKindOfClass:[NSWindow class]], static_cast<const char *>(__FUNCTION__),
+                   "Object was not a NSWindow");
 
-    if( [nativeWindow respondsToSelector:@selector(setToolbarStyle:)] ) {
-        [nativeWindow setToolbarStyle:NSWindowToolbarStylePreference];
+        if ([nativeWindow respondsToSelector:@selector(setToolbarStyle:)]) {
+            [nativeWindow setToolbarStyle:NSWindowToolbarStylePreference];
+        }
     }
 }
 
