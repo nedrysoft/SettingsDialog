@@ -23,6 +23,7 @@
 
 #include <QDebug>
 #include "SettingsDialog/SettingsDialog.h"
+#include "ThemeSupport.h"
 
 #include "SettingsDialog/ISettingsPage.h"
 #include "SeparatorWidget.h"
@@ -71,7 +72,8 @@ constexpr auto detailsLeftMargin = 9;
 
 Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft::SettingsDialog::ISettingsPage *> &pages, QWidget *parent) :
         QWidget(nullptr),
-        m_currentPage(nullptr) {
+        m_currentPage(nullptr),
+        m_themeSupport(new Nedrysoft::Utils::ThemeSupport) {
 
     Q_UNUSED(parent)
 
@@ -173,6 +175,14 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
 #endif
     }
 
+    connect(m_themeSupport, &Nedrysoft::Utils::ThemeSupport::themeChanged, [=](bool isDarkMode) {
+        for(auto settingsPage : m_pages) {
+            if (!settingsPage->m_pageSettings.isEmpty()) {
+                settingsPage->m_toolBarItem->setIcon(settingsPage->m_pageSettings[0]->icon(isDarkMode));
+            }
+        }
+    });
+
 #if !defined(Q_OS_MACOS)
     for (auto currentIndex=0;currentIndex<m_treeWidget->topLevelItemCount();currentIndex++) {
         auto item = m_treeWidget->topLevelItem(currentIndex);
@@ -252,6 +262,7 @@ Nedrysoft::SettingsDialog::SettingsDialog::~SettingsDialog() {
     delete m_categoryLabel;
     delete m_stackedWidget;
 #endif
+    delete m_themeSupport;
 }
 
 auto Nedrysoft::SettingsDialog::SettingsDialog::okToClose() -> bool {
@@ -339,14 +350,16 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
 #else
     settingsPage->m_pageSettings = page;
 #endif
-    settingsPage->m_icon = page->icon();
+    settingsPage->m_icon = page->icon(Nedrysoft::Utils::ThemeSupport::isDarkMode());
     settingsPage->m_description = page->description();
 
     if (pageWidget->layout()) {
         pageWidget->layout()->setSizeConstraint(QLayout::SetMinimumSize);
     }
 
-    settingsPage->m_toolBarItem = m_toolBar->addItem(page->icon(), page->section());
+    settingsPage->m_toolBarItem = m_toolBar->addItem(
+            page->icon(Nedrysoft::Utils::ThemeSupport::isDarkMode()),
+            page->section());
 
     connect(settingsPage->m_toolBarItem, &QMacToolBarItem::activated, this, [this, settingsPage]() {
         if (!m_currentPage) {
@@ -486,6 +499,8 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
 auto Nedrysoft::SettingsDialog::SettingsDialog::closeEvent(QCloseEvent *event) -> void {
     if (okToClose()) {
         event->accept();
+
+        acceptSettings();
 
         Q_EMIT closed();
     } else {

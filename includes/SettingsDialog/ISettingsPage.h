@@ -64,9 +64,11 @@ namespace Nedrysoft::SettingsDialog {
             /**
              * @brief       The icon for this settings page.
              *
+             * @param[in[   isDarkMode set to true to retries the dark mode icon; otherwise false.
+             *
              * @returns     a QIcon
              */
-            virtual auto icon() -> QIcon = 0;
+            virtual auto icon(bool isDarkMode) -> QIcon = 0;
 
             /**
              * @brief       Creates a new instance of the page widget.

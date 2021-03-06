@@ -45,6 +45,10 @@ class QStackedWidget;
 class QTreeWidget;
 class QVBoxLayout;
 
+namespace Nedrysoft::Utils {
+    class ThemeSupport;
+}
+
 namespace Nedrysoft::SettingsDialog {
     class TransparentWidget;
     class ISettingsPage;
@@ -61,8 +65,7 @@ namespace Nedrysoft::SettingsDialog {
 #else
                 m_pageSettings(nullptr),
 #endif
-                m_widget(nullptr)
-                {
+                m_widget(nullptr) {
 
                 }
 
@@ -77,7 +80,6 @@ namespace Nedrysoft::SettingsDialog {
             QWidget *m_widget;                          //! the widget that contains the settings for this category
             ISettingsPage *m_pageSettings;              //! pointer to the page interface
 #endif
-
             QIcon m_icon;                               //! the icon of the page
     };
 
@@ -190,8 +192,7 @@ namespace Nedrysoft::SettingsDialog {
             QList<SettingsPage *> m_pages;
 #endif
             SettingsPage *m_currentPage;                        //! current widget
-
-
+            Nedrysoft::Utils::ThemeSupport *m_themeSupport;     //! theme support
     };
 }
 
