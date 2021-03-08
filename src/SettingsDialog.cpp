@@ -175,6 +175,7 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
 #endif
     }
 
+#if defined(Q_OS_MACOS)
     connect(m_themeSupport, &Nedrysoft::Utils::ThemeSupport::themeChanged, [=](bool isDarkMode) {
         for(auto settingsPage : m_pages) {
             if (!settingsPage->m_pageSettings.isEmpty()) {
@@ -182,6 +183,7 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
             }
         }
     });
+#endif
 
 #if !defined(Q_OS_MACOS)
     for (auto currentIndex=0;currentIndex<m_treeWidget->topLevelItemCount();currentIndex++) {

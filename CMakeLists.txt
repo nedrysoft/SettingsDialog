@@ -43,6 +43,7 @@ set(library_SOURCES
     includes/SettingsDialog/SettingsDialog.h
     includes/SettingsDialog/SettingsDialogSpec.h
     src/SettingsDialog.cpp
+    src/ThemeSupport.h
 )
 
 find_package(Qt5 COMPONENTS Core Widgets REQUIRED)

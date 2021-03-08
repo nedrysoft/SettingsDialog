@@ -47,7 +47,11 @@ namespace Nedrysoft::Utils {
             /**
              * @brief       Constructs a new ThemeSupport instance.
              */
+#if defined(Q_OS_MACOS)
             explicit ThemeSupport();
+#else
+            ThemeSupport() = default;
+#endif
 
             /**
              * @brief       Returns the current OS theme mode.

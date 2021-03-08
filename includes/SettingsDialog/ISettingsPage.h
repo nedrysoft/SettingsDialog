@@ -68,7 +68,7 @@ namespace Nedrysoft::SettingsDialog {
              *
              * @returns     a QIcon
              */
-            virtual auto icon(bool isDarkMode) -> QIcon = 0;
+            virtual auto icon(bool isDarkMode=false) -> QIcon = 0;
 
             /**
              * @brief       Creates a new instance of the page widget.
