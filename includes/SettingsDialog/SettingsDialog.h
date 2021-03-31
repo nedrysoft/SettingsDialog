@@ -45,7 +45,7 @@ class QStackedWidget;
 class QTreeWidget;
 class QVBoxLayout;
 
-namespace Nedrysoft::Utils {
+namespace Nedrysoft::ThemeSupport {
     class ThemeSupport;
 }
 
@@ -192,7 +192,7 @@ namespace Nedrysoft::SettingsDialog {
             QList<SettingsPage *> m_pages;
 #endif
             SettingsPage *m_currentPage;                        //! current widget
-            Nedrysoft::Utils::ThemeSupport *m_themeSupport;     //! theme support
+            Nedrysoft::ThemeSupport::ThemeSupport *m_themeSupport;     //! theme support
     };
 }
 

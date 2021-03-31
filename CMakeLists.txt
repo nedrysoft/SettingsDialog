@@ -43,7 +43,6 @@ set(library_SOURCES
     includes/SettingsDialog/SettingsDialog.h
     includes/SettingsDialog/SettingsDialogSpec.h
     src/SettingsDialog.cpp
-    src/ThemeSupport.h
 )
 
 find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
@@ -62,8 +61,6 @@ if(APPLE)
         src/MacHelper.mm
         src/SeparatorWidget.cpp
         src/SeparatorWidget.h
-        src/ThemeSupport.h
-        src/ThemeSupport.mm
         src/TransparentWidget.cpp
         src/TransparentWidget.h
     )
@@ -89,3 +86,7 @@ if(APPLE)
     target_link_libraries(${PROJECT_NAME} "-framework AppKit" "-framework Cocoa")
     target_link_libraries(${PROJECT_NAME} stdc++ objc)
 endif()
+
+target_link_directories(${PROJECT_NAME} PRIVATE ${NEDRYSOFT_THEMESUPPORT_LIBRARY_DIR})
+target_link_libraries(${PROJECT_NAME} "ThemeSupport")
+target_include_directories(${PROJECT_NAME} PRIVATE "${NEDRYSOFT_THEMESUPPORT_INCLUDE_DIR}")

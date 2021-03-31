@@ -73,7 +73,7 @@ constexpr auto detailsLeftMargin = 9;
 Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft::SettingsDialog::ISettingsPage *> &pages, QWidget *parent) :
         QWidget(nullptr),
         m_currentPage(nullptr),
-        m_themeSupport(new Nedrysoft::Utils::ThemeSupport) {
+        m_themeSupport(new Nedrysoft::ThemeSupport::ThemeSupport) {
 
     Q_UNUSED(parent)
 
@@ -176,7 +176,7 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
     }
 
 #if defined(Q_OS_MACOS)
-    connect(m_themeSupport, &Nedrysoft::Utils::ThemeSupport::themeChanged, [=](bool isDarkMode) {
+    connect(m_themeSupport, &Nedrysoft::ThemeSupport::ThemeSupport::themeChanged, [=](bool isDarkMode) {
         for(auto settingsPage : m_pages) {
             if (!settingsPage->m_pageSettings.isEmpty()) {
                 settingsPage->m_toolBarItem->setIcon(settingsPage->m_pageSettings[0]->icon(isDarkMode));
@@ -352,7 +352,7 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
 #else
     settingsPage->m_pageSettings = page;
 #endif
-    settingsPage->m_icon = page->icon(Nedrysoft::Utils::ThemeSupport::isDarkMode());
+    settingsPage->m_icon = page->icon(Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode());
     settingsPage->m_description = page->description();
 
     if (pageWidget->layout()) {
@@ -360,7 +360,7 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
     }
 
     settingsPage->m_toolBarItem = m_toolBar->addItem(
-            page->icon(Nedrysoft::Utils::ThemeSupport::isDarkMode()),
+            page->icon(Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode()),
             page->section());
 
     connect(settingsPage->m_toolBarItem, &QMacToolBarItem::activated, this, [this, settingsPage]() {
