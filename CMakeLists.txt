@@ -45,6 +45,13 @@ set(library_SOURCES
     src/SettingsDialog.cpp
 )
 
+if(WIN32)
+    configure_file("Version.h.in" "Version.h")
+    list(APPEND library_SOURCES "version.rc")
+    add_definitions("-DNEDRYSOFT_MODULE_FILENAME=\"${PROJECT_NAME}.dll\"")
+    add_definitions("-DNEDRYSOFT_MODULE_NAME=\"${PROJECT_NAME}\"")
+endif()
+
 find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
 
 set(Qt_LIBS Qt5::Core Qt5::Widgets)
