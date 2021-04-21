@@ -454,7 +454,7 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
 
         tabWidget = new QTabWidget();
 
-        treeItem->setIcon(0, page->icon());
+        treeItem->setIcon(0, page->icon(Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode()));
         treeItem->setText(0, page->section());
         treeItem->setData(0, Qt::UserRole, QVariant::fromValue(tabWidget));
         treeItem->setData(0, Qt::ToolTipRole, page->description());
