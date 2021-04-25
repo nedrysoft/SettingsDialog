@@ -29,7 +29,7 @@
 
 class QGraphicsOpacityEffect;
 
-namespace Nedrysoft::SettingsDialog {
+namespace Nedrysoft { namespace SettingsDialog {
     /**
      * @brief               The TransparentWidget class.
      *
@@ -93,6 +93,6 @@ namespace Nedrysoft::SettingsDialog {
             QWidget *m_childWidget;                                     //! the child widget being made transparent
             QSize m_childSize;
     };
-}
+}}
 
 #endif // NEDRYSOFT_TRANSPARENTWIDGET_H

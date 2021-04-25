@@ -26,7 +26,7 @@
 
 #include <QWidget>
 
-namespace Nedrysoft::SettingsDialog {
+namespace Nedrysoft { namespace SettingsDialog {
     /**
      * @brief       The SeparatorWidget class draws a separating line.
      */
@@ -44,8 +44,6 @@ namespace Nedrysoft::SettingsDialog {
              */
             auto paintEvent(QPaintEvent *event) -> void override;
     };
-}
-
-
+}}
 
 #endif //NEDRYSOFT_SEPARATORWIDGET_H

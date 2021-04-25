@@ -45,11 +45,11 @@ class QStackedWidget;
 class QTreeWidget;
 class QVBoxLayout;
 
-namespace Nedrysoft::ThemeSupport {
+namespace Nedrysoft { namespace ThemeSupport {
     class ThemeSupport;
-}
+}}
 
-namespace Nedrysoft::SettingsDialog {
+namespace Nedrysoft { namespace SettingsDialog {
     class TransparentWidget;
     class ISettingsPage;
 
@@ -194,6 +194,6 @@ namespace Nedrysoft::SettingsDialog {
             SettingsPage *m_currentPage;                        //! current widget
             Nedrysoft::ThemeSupport::ThemeSupport *m_themeSupport;     //! theme support
     };
-}
+}}
 
 #endif // NEDRYSOFT_SETTINGSDIALOG_H

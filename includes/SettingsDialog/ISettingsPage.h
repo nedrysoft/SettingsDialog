@@ -27,7 +27,7 @@
 #include <ComponentSystem/IInterface.h>
 #include "SettingsDialogSpec.h"
 
-namespace Nedrysoft::SettingsDialog {
+namespace Nedrysoft { namespace SettingsDialog {
     /**
      * @brief       The Settings Page class defines a settings page.
      */
@@ -89,7 +89,7 @@ namespace Nedrysoft::SettingsDialog {
              */
             virtual auto acceptSettings() -> void = 0;
     };
-}
+}}
 
 Q_DECLARE_INTERFACE(Nedrysoft::SettingsDialog::ISettingsPage, "com.nedrysoft.settingsdialog.ISettingsPage/1.0.0")
 
