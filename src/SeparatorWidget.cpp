@@ -25,15 +25,15 @@
 
 #include <QPainter>
 
-constexpr auto lineMargin = 25;
-constexpr auto lineColour = qRgb(0x60, 0x60, 0x60);
+constexpr auto LineMargin = 25;
+constexpr auto LineColour = qRgb(0x60, 0x60, 0x60);
 
 auto Nedrysoft::SettingsDialog::SeparatorWidget::paintEvent(QPaintEvent *event) -> void {
     QPoint centrePoint = rect().center();
 
     QPainter painter(this);
 
-    painter.setPen(QColor(lineColour));
+    painter.setPen(QColor(LineColour));
 
-    painter.drawLine(rect().left()+lineMargin, centrePoint.y(), rect().right()-lineMargin, centrePoint.y());
+    painter.drawLine(rect().left()+LineMargin, centrePoint.y(), rect().right()-LineMargin, centrePoint.y());
 }

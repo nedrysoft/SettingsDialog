@@ -25,9 +25,6 @@
 #define NEDRYSOFT_MACHELPER_H
 
 #include <QPixmap>
-#include <QtMacExtras>
-
-class QMacToolBar;
 
 namespace Nedrysoft {
     namespace StandardImage {
@@ -149,13 +146,6 @@ namespace Nedrysoft {
              * @returns     the path to the font if found; otherwise an empty string.
              */
             static auto fontFilename(const QString &fontName) -> QString;
-
-            /**
-             * @brief       Changes the native toolbar to a preferences toolbar.
-             *
-             * @param[in]   window the window with the native toolbar.
-             */
-            static void enablePreferencesToolbar(QWidget *window);
     };
 }
 

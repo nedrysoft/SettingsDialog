@@ -31,33 +31,6 @@ constexpr auto bitsPerPixel = 8;
 constexpr auto samplesPerPixel = 4;
 constexpr auto systemFontSize = 12;
 
-void Nedrysoft::MacHelper::enablePreferencesToolbar(QWidget *window) {
-    if (@available(macOS 11, *)) {
-        auto nativeView = reinterpret_cast<NSView *>(window->winId());
-
-        if (!nativeView) {
-            return;
-        }
-
-        Q_ASSERT_X([nativeView isKindOfClass:[NSView class]], static_cast<const char *>(__FUNCTION__),
-                   "Object was not a NSView");
-
-        auto nativeWindow = [nativeView window];
-
-        if (nativeWindow == nil) {
-            return;
-        }
-
-        Q_ASSERT_X([nativeWindow isKindOfClass:[NSWindow class]], static_cast<const char *>(__FUNCTION__),
-                   "Object was not a NSWindow");
-
-        if ([nativeWindow respondsToSelector:@selector(setToolbarStyle:)]) {
-            [nativeWindow setToolbarStyle:NSWindowToolbarStylePreference];
-        }
-    }
-}
-
-
 auto Nedrysoft::MacHelper::standardImage(StandardImage::StandardImageName standardImage, QSize imageSize)->QPixmap {
     auto bitmapRepresentation = [[NSBitmapImageRep alloc]
             initWithBitmapDataPlanes: nullptr
@@ -102,11 +75,15 @@ auto Nedrysoft::MacHelper::standardImage(StandardImage::StandardImageName standa
 
     [NSGraphicsContext restoreGraphicsState];
 
-    auto pixmap = QtMac::fromCGImageRef([bitmapRepresentation CGImage]);
+    auto imageRef = [bitmapRepresentation CGImage];
+
+    auto pixelData = CFDataGetBytePtr(CGDataProviderCopyData(CGImageGetDataProvider(imageRef)));
+
+    auto image = QImage(pixelData,  imageSize.width(), imageSize.height(),QImage::Format_ARGB32);
 
     [bitmapRepresentation release];
 
-    return pixmap;
+    return QPixmap::fromImage(image);
 }
 
 auto Nedrysoft::MacHelper::nativeAlert(QWidget *parent, const QString &messageText, const QString &informativeText, const QStringList &buttons) -> Nedrysoft::AlertButton::AlertButtonResult {

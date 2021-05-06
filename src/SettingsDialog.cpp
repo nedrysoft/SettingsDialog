@@ -22,6 +22,10 @@
  */
 
 #include <QDebug>
+
+#include "MacHelper/MacToolbar.h"
+#include "MacHelper/MacToolbarItem.h"
+
 #include "SettingsDialog/SettingsDialog.h"
 #include "ThemeSupport.h"
 
@@ -30,13 +34,10 @@
 
 #if defined(Q_OS_MACOS)
 #include "TransparentWidget.h"
-#endif
 
-#if defined(Q_OS_MACOS)
 #include <QGraphicsOpacityEffect>
-#include <QMacToolBar>
+#include <QParallelAnimationGroup>
 #include <QPropertyAnimation>
-#include <QtMac>
 #else
 #include <QLabel>
 #include <QPushButton>
@@ -51,16 +52,17 @@
 
 #if defined(Q_OS_MACOS)
 #include "MacHelper.h"
+#include "MacHelper/MacToolbar.h"
 
 #include <memory>
 
 using namespace std::chrono_literals;
 
-constexpr auto transisionDuration = 100ms;
-constexpr auto toolbarItemWidth = 64;
-constexpr auto alphaTransparent = 0;
-constexpr auto alphaOpaque = 1;
-constexpr auto defaultMinimumWidth = 300;
+constexpr auto TransisionDuration = 100ms;
+constexpr auto ToolbarItemWidth = 64;
+constexpr auto AlphaTransparent = 0;
+constexpr auto AlphaOpaque = 1;
+constexpr auto DefaultMinimumWidth = 300;
 #else
 constexpr auto categoryFontAdjustment = 6;
 constexpr auto settingsIconSize = 32;
@@ -78,7 +80,7 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
     Q_UNUSED(parent)
 
 #if defined(Q_OS_MACOS)
-    m_toolBar = new QMacToolBar(this);
+    m_toolbar = new Nedrysoft::SettingsDialog::MacToolbar;
 
     m_animationGroup = nullptr;
 #else
@@ -102,7 +104,7 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
 
     m_stackedWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    m_stackedWidget->layout()->setMargin(0);
+    m_stackedWidget->layout()->setContentsMargins(0, 0, 0, 0);
 
     m_mainLayout->addWidget(m_treeWidget);
 
@@ -115,7 +117,7 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
 
     m_detailLayout = new QVBoxLayout;
 
-    m_detailLayout->setContentsMargins(detailsLeftMargin,0,0,0);
+    m_detailLayout->setContentsMargins(detailsLeftMargin, 0, 0, 0);
 
     m_detailLayout->addWidget(m_categoryLabel);
 
@@ -167,7 +169,7 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
 #if defined(Q_OS_MACOS)
         auto settingsPage = addPage(page);
 
-        m_pages[settingsPage->m_toolBarItem] = settingsPage;
+        m_pages[settingsPage->m_toolbarItem] = settingsPage;
 #else
         auto settingsPage = addPage(page);
 
@@ -179,10 +181,12 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
     connect(m_themeSupport, &Nedrysoft::ThemeSupport::ThemeSupport::themeChanged, [=](bool isDarkMode) {
         for(auto settingsPage : m_pages) {
             if (!settingsPage->m_pageSettings.isEmpty()) {
-                settingsPage->m_toolBarItem->setIcon(settingsPage->m_pageSettings[0]->icon(isDarkMode));
+                //settingsPage->m_toolBarItem->setIcon(settingsPage->m_pageSettings[0]->icon(isDarkMode));
             }
         }
     });
+
+    m_toolbar->enablePreferencesToolbar();
 #endif
 
 #if !defined(Q_OS_MACOS)
@@ -203,11 +207,9 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
 #endif
 
 #if defined(Q_OS_MACOS)
-    m_toolBar->attachToWindow(nativeWindowHandle());
+    m_toolbar->attachToWindow(this);
 
-    Nedrysoft::MacHelper::enablePreferencesToolbar(this);
-
-    QSize size(defaultMinimumWidth, 0);
+    QSize size(DefaultMinimumWidth, 0);
 
     for(auto page : m_pages) {
         size = QSize(qMax(page->m_widget->sizeHint().width(), size.width()), qMax(page->m_widget->sizeHint().height(), size.height()));
@@ -254,7 +256,7 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::sizeHint() -> QSize {
 
 Nedrysoft::SettingsDialog::SettingsDialog::~SettingsDialog() {
 #if defined(Q_OS_MACOS)
-    delete m_toolBar;
+    delete m_toolbar;
 #else
     for (auto page : m_pages) {
         delete page;
@@ -359,11 +361,15 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
         pageWidget->layout()->setSizeConstraint(QLayout::SetMinimumSize);
     }
 
-    settingsPage->m_toolBarItem = m_toolBar->addItem(
+    settingsPage->m_toolbarItem = m_toolbar->addItem(
             page->icon(Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode()),
             page->section());
 
-    connect(settingsPage->m_toolBarItem, &QMacToolBarItem::activated, this, [this, settingsPage]() {
+    connect(settingsPage->m_toolbarItem,
+            &Nedrysoft::SettingsDialog::MacToolbarItem::activated,
+            this,
+            [this, settingsPage]() {
+
         if (!m_currentPage) {
             m_currentPage = settingsPage;
             m_currentPage->m_widget->setOpacity(1);
@@ -375,7 +381,7 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
             return;
         }
 
-        auto currentItem = m_pages[m_currentPage->m_toolBarItem]->m_widget;
+        auto currentItem = m_pages[m_currentPage->m_toolbarItem]->m_widget;
         auto nextItem = settingsPage->m_widget;
 
         if (currentItem==nextItem) {
@@ -396,7 +402,7 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
         for(auto property : propertyNames) {
             auto sizeAnimation = new QPropertyAnimation(this, property);
 
-            sizeAnimation->setDuration(transisionDuration.count());
+            sizeAnimation->setDuration(TransisionDuration.count());
             sizeAnimation->setStartValue(currentItem->size());
             sizeAnimation->setEndValue(minSize);
 
@@ -405,17 +411,17 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
 
         auto outgoingAnimation = new QPropertyAnimation(currentItem->transparencyEffect(), "opacity");
 
-        outgoingAnimation->setDuration(transisionDuration.count());
+        outgoingAnimation->setDuration(TransisionDuration.count());
         outgoingAnimation->setStartValue(currentItem->transparencyEffect()->opacity());
-        outgoingAnimation->setEndValue(alphaTransparent);
+        outgoingAnimation->setEndValue(AlphaTransparent);
 
         m_animationGroup->addAnimation(outgoingAnimation);
 
         auto incomingAnimation = new QPropertyAnimation(nextItem->transparencyEffect(), "opacity");
 
-        incomingAnimation->setDuration(transisionDuration.count());
+        incomingAnimation->setDuration(TransisionDuration.count());
         incomingAnimation->setStartValue(nextItem->transparencyEffect()->opacity());
-        incomingAnimation->setEndValue(alphaOpaque);
+        incomingAnimation->setEndValue(AlphaOpaque);
 
         m_animationGroup->addAnimation(incomingAnimation);
 

@@ -34,7 +34,7 @@ Nedrysoft::SettingsDialog::TransparentWidget::TransparentWidget(double opacity, 
 
     m_layout = new QVBoxLayout;
 
-    m_layout->setMargin(12);
+    m_layout->setContentsMargins(12, 12, 12, 12);
     m_layout->setSpacing(4);
 
     m_childWidget = nullptr;

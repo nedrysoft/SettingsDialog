@@ -32,13 +32,8 @@
 #include <QString>
 #include <QWidget>
 
-#if defined(Q_OS_MACOS)
-class QMacToolBar;
-#endif
-
 class QHBoxLayout;
 class QLabel;
-class QMacToolBarItem;
 class QParallelAnimationGroup;
 class QPushButton;
 class QStackedWidget;
@@ -52,6 +47,8 @@ namespace Nedrysoft { namespace ThemeSupport {
 namespace Nedrysoft { namespace SettingsDialog {
     class TransparentWidget;
     class ISettingsPage;
+    class MacToolbar;
+    class MacToolbarItem;
 
     /**
      * @brief       The SettingsPage class describes an individual page of the application settings
@@ -60,7 +57,7 @@ namespace Nedrysoft { namespace SettingsDialog {
         public:
             SettingsPage() :
 #if defined(Q_OS_MACOS)
-                m_toolBarItem(nullptr),
+                //m_toolBarItem(nullptr),
                 m_pageSettings(QList<ISettingsPage *>()),
 #else
                 m_pageSettings(nullptr),
@@ -74,7 +71,7 @@ namespace Nedrysoft { namespace SettingsDialog {
             QString m_description;                      //! description of the settings category page
 #if defined(Q_OS_MACOS)
             TransparentWidget *m_widget;                //! the widget that contains the settings for this category
-            QMacToolBarItem *m_toolBarItem;             //! toolbar item
+            Nedrysoft::SettingsDialog::MacToolbarItem *m_toolbarItem;              //! toolbar item
             QList<ISettingsPage *> m_pageSettings;      //! pointer to the page interfaces
 #else
             QWidget *m_widget;                          //! the widget that contains the settings for this category
@@ -173,8 +170,8 @@ namespace Nedrysoft { namespace SettingsDialog {
 
         private:
 #if defined(Q_OS_MACOS)
-            QMacToolBar *m_toolBar;                             //! A native macOS toolbar (unified style)
-            QMap<QMacToolBarItem *, SettingsPage *> m_pages;    //! The list of settings widgets
+            Nedrysoft::SettingsDialog::MacToolbar *m_toolbar;   //! A native macOS toolbar (unified style)
+            QMap<Nedrysoft::SettingsDialog::MacToolbarItem *, SettingsPage *> m_pages;     //! The list of settings widgets
             int m_toolbarHeight;                                //! the height of the unified toolbar
             int m_maximumWidth;                                 //! the maximal width of all the settings page.
             QParallelAnimationGroup *m_animationGroup;          //! the currently active animation
