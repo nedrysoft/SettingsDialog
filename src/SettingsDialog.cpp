@@ -45,7 +45,11 @@
 #endif
 
 #include <QApplication>
-#include <QDesktopWidget>
+#if (QT_VERSION_MAJOR>5)
+#include <QScreen>
+#else
+#include <QDesktopServices>
+#endif
 #include <QResizeEvent>
 #include <QTreeWidget>
 #include <QVBoxLayout>
@@ -163,8 +167,6 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
     setLayout(m_layout);
 #endif
 
-    int listWidth = 0;
-
     for (auto page: pages) {
 #if defined(Q_OS_MACOS)
         auto settingsPage = addPage(page);
@@ -190,6 +192,8 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
 #endif
 
 #if !defined(Q_OS_MACOS)
+    int listWidth = 0;
+
     for (auto currentIndex=0;currentIndex<m_treeWidget->topLevelItemCount();currentIndex++) {
         auto item = m_treeWidget->topLevelItem(currentIndex);
 
@@ -238,11 +242,17 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
     // this uses qApp->desktop()->rect() which is the union of all screen geometries in the case of multiple
     // screens.
 
+    QRect screenRect(qApp->primaryScreen()->availableGeometry());
+
+    for (auto screen : qApp->screens()) {
+        screenRect.united(screen->availableGeometry());
+    }
+
     setGeometry(QStyle::alignedRect(
                     Qt::LeftToRight,
                     Qt::AlignCenter,
                     QSize(m_maximumWidth, maximumHeight),
-                    qApp->desktop()->rect() ));
+                    screenRect ));
 #endif
 }
 

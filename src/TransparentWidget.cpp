@@ -74,7 +74,11 @@ auto Nedrysoft::SettingsDialog::TransparentWidget::addWidget(QWidget *childWidge
                 childWidget->sizeHint().width(),
                 qMin(childWidget->sizeHint().height(), childWidget->size().height()) );
 
+#if (QT_VERSION_MAJOR>5)
+        m_childSize.setHeight(m_childSize.height()+m_layout->contentsMargins().bottom());
+#else
         m_childSize.setHeight(m_childSize.height()+m_layout->margin());
+#endif
 
         if (m_layout->count()) {
             m_childSize.setHeight(m_childSize.height()+(m_layout->spacing()*(m_layout->count()-1)));
