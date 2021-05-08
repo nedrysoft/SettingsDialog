@@ -45,12 +45,8 @@
 #endif
 
 #include <QApplication>
-#if (QT_VERSION_MAJOR>5)
-#include <QScreen>
-#else
-#include <QDesktopServices>
-#endif
 #include <QResizeEvent>
+#include <QScreen>
 #include <QTreeWidget>
 #include <QVBoxLayout>
 
@@ -245,7 +241,7 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
     QRect screenRect(qApp->primaryScreen()->availableGeometry());
 
     for (auto screen : qApp->screens()) {
-        screenRect.united(screen->availableGeometry());
+        screenRect = screenRect.united(screen->availableGeometry());
     }
 
     setGeometry(QStyle::alignedRect(
