@@ -104,9 +104,6 @@ add_library(${PROJECT_NAME} SHARED
     ${library_SOURCES}
 )
 
-target_link_directories(${PROJECT_NAME} PRIVATE ${NEDRYSOFT_MACHELPER_LIBRARY_DIR})
-target_include_directories(${PROJECT_NAME} PRIVATE "${NEDRYSOFT_MACHELPER_INCLUDE_DIR}")
-
 if(DEFINED NEDRYSOFT_SETTINGSDIALOG_LIBRARY_DIR)
     set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${NEDRYSOFT_SETTINGSDIALOG_LIBRARY_DIR}")
     set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${NEDRYSOFT_SETTINGSDIALOG_LIBRARY_DIR}")
@@ -116,9 +113,12 @@ endif()
 
 target_link_libraries(${PROJECT_NAME} ${Qt_LIBS})
 target_link_libraries(${PROJECT_NAME} ComponentSystem)
-target_link_libraries(${PROJECT_NAME} MacHelper)
 
 if(APPLE)
+    target_link_directories(${PROJECT_NAME} PRIVATE ${NEDRYSOFT_MACHELPER_LIBRARY_DIR})
+    target_include_directories(${PROJECT_NAME} PRIVATE "${NEDRYSOFT_MACHELPER_INCLUDE_DIR}")
+
+    target_link_libraries(${PROJECT_NAME} MacHelper)
     target_link_libraries(${PROJECT_NAME} "-framework AppKit" "-framework Cocoa")
     target_link_libraries(${PROJECT_NAME} stdc++ objc)
 endif()
