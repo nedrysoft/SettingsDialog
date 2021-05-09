@@ -21,11 +21,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QDebug>
-
-#include "MacHelper/MacToolbar.h"
-#include "MacHelper/MacToolbarItem.h"
-
 #include "SettingsDialog/SettingsDialog.h"
 #include "ThemeSupport.h"
 
@@ -33,6 +28,8 @@
 #include "SeparatorWidget.h"
 
 #if defined(Q_OS_MACOS)
+#include "MacHelper/MacToolbar.h"
+#include "MacHelper/MacToolbarItem.h"
 #include "TransparentWidget.h"
 
 #include <QGraphicsOpacityEffect>
@@ -51,8 +48,6 @@
 #include <QVBoxLayout>
 
 #if defined(Q_OS_MACOS)
-#include "MacHelper.h"
-#include "MacHelper/MacToolbar.h"
 
 #include <memory>
 
@@ -276,18 +271,15 @@ Nedrysoft::SettingsDialog::SettingsDialog::~SettingsDialog() {
 }
 
 auto Nedrysoft::SettingsDialog::SettingsDialog::okToClose() -> bool {
-    auto acceptable = true;
-
 #if !defined(Q_OS_MACOS)
     for(auto page : m_pages) {
         if (!page->m_pageSettings->canAcceptSettings()) {
-            acceptable = false;
 
-            break;
+            return false;
         }
     }
 #endif
-    return acceptable;
+    return true;
 }
 
 auto Nedrysoft::SettingsDialog::SettingsDialog::resizeEvent(QResizeEvent *event) -> void {
@@ -510,6 +502,9 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
 #endif
 }
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "ConstantConditionsOC"
+#pragma ide diagnostic ignored "UnreachableCode"
 auto Nedrysoft::SettingsDialog::SettingsDialog::closeEvent(QCloseEvent *event) -> void {
     if (okToClose()) {
         event->accept();
@@ -521,6 +516,7 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::closeEvent(QCloseEvent *event) -
         event->ignore();
     }
 }
+#pragma clang diagnostic pop
 
 auto Nedrysoft::SettingsDialog::SettingsDialog::acceptSettings() -> bool {
     bool settingsValid = true;

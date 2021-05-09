@@ -24,6 +24,8 @@
 #ifndef NEDRYSOFT_SETTINGSDIALOG_H
 #define NEDRYSOFT_SETTINGSDIALOG_H
 
+#include <QtGlobal>
+
 #include "SettingsDialog/SettingsDialogSpec.h"
 
 #include <QIcon>
