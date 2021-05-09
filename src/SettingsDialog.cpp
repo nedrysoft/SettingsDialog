@@ -59,12 +59,12 @@ constexpr auto AlphaTransparent = 0;
 constexpr auto AlphaOpaque = 1;
 constexpr auto DefaultMinimumWidth = 300;
 #else
-constexpr auto categoryFontAdjustment = 6;
-constexpr auto settingsIconSize = 32;
-constexpr auto settingsDialogScaleFactor = 0.5;
-constexpr auto categoryLeftMargin = 4;
-constexpr auto categoryBottomMargin = 9;
-constexpr auto detailsLeftMargin = 9;
+constexpr auto CategoryFontAdjustment = 6;
+constexpr auto SettingsIconSize = 32;
+constexpr auto SettingsDialogScaleFactor = 0.5;
+constexpr auto CategoryLeftMargin = 4;
+constexpr auto CategoryBottomMargin = 9;
+constexpr auto DetailsLeftMargin = 9;
 #endif
 
 Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft::SettingsDialog::ISettingsPage *> &pages, QWidget *parent) :
@@ -79,7 +79,7 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
 
     m_animationGroup = nullptr;
 #else
-    resize((QSizeF(parent->frameSize())*settingsDialogScaleFactor).toSize());
+    resize((QSizeF(parent->frameSize())*SettingsDialogScaleFactor).toSize());
 
     m_mainLayout = new QHBoxLayout;
 
@@ -87,7 +87,7 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
 
     m_treeWidget->setIndentation(0);
 
-    m_treeWidget->setIconSize(QSize(settingsIconSize, settingsIconSize));
+    m_treeWidget->setIconSize(QSize(SettingsIconSize, SettingsIconSize));
 
     m_treeWidget->setHeaderHidden(true);
 
@@ -105,14 +105,14 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
 
     m_categoryLabel = new QLabel;
 
-    m_categoryLabel->setContentsMargins(categoryLeftMargin,0,0,categoryBottomMargin);
+    m_categoryLabel->setContentsMargins(CategoryLeftMargin, 0, 0, CategoryBottomMargin);
 
-    m_categoryLabel->setFont(QFont(m_categoryLabel->font().family(), m_categoryLabel->font().pointSize()+categoryFontAdjustment));
+    m_categoryLabel->setFont(QFont(m_categoryLabel->font().family(), m_categoryLabel->font().pointSize()+CategoryFontAdjustment));
     m_categoryLabel->setAlignment(Qt::AlignLeft);
 
     m_detailLayout = new QVBoxLayout;
 
-    m_detailLayout->setContentsMargins(detailsLeftMargin, 0, 0, 0);
+    m_detailLayout->setContentsMargins(DetailsLeftMargin, 0, 0, 0);
 
     m_detailLayout->addWidget(m_categoryLabel);
 
@@ -197,8 +197,8 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
         }
     }
 
-    m_treeWidget->setMinimumWidth(listWidth+(settingsIconSize*2));
-    m_treeWidget->setMaximumWidth(listWidth+(settingsIconSize*2));
+    m_treeWidget->setMinimumWidth(listWidth+(SettingsIconSize*2));
+    m_treeWidget->setMaximumWidth(listWidth+(SettingsIconSize*2));
 #endif
 
 #if defined(Q_OS_MACOS)
