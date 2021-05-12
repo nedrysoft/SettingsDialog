@@ -26,7 +26,7 @@
 
 #include <QtGlobal>
 
-#include "SettingsDialog/SettingsDialogSpec.h"
+#include "SettingsDialogSpec.h"
 
 #include <QIcon>
 #include <QList>

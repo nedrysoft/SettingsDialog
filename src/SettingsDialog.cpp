@@ -21,15 +21,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "SettingsDialog/SettingsDialog.h"
-#include "ThemeSupport.h"
+#include "SettingsDialog.h"
+#include <ThemeSupport>
 
-#include "SettingsDialog/ISettingsPage.h"
+#include "ISettingsPage.h"
 #include "SeparatorWidget.h"
 
 #if defined(Q_OS_MACOS)
-#include "MacHelper/MacToolbar.h"
-#include "MacHelper/MacToolbarItem.h"
+#include <MacToolbar>
+#include <MacToolbarItem>
 #include "TransparentWidget.h"
 
 #include <QGraphicsOpacityEffect>

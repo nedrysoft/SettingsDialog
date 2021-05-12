@@ -39,9 +39,9 @@ ADD_DEFINITIONS(-DNEDRYSOFT_LIBRARY_SETTINGSDIALOG_EXPORT)
 project(SettingsDialog)
 
 set(library_SOURCES
-    includes/SettingsDialog/ISettingsPage.h
-    includes/SettingsDialog/SettingsDialog.h
-    includes/SettingsDialog/SettingsDialogSpec.h
+    src/ISettingsPage.h
+    src/SettingsDialog.h
+    src/SettingsDialogSpec.h
     src/SettingsDialog.cpp
 )
 
