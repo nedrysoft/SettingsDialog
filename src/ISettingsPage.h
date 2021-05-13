@@ -24,8 +24,9 @@
 #ifndef NEDRYSOFT_ISETTINGSPAGE_H
 #define NEDRYSOFT_ISETTINGSPAGE_H
 
-#include <ComponentSystem/IInterface.h>
 #include "SettingsDialogSpec.h"
+
+#include <IInterface>
 
 namespace Nedrysoft { namespace SettingsDialog {
     /**
