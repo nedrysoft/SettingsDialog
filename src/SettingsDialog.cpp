@@ -75,7 +75,7 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
     Q_UNUSED(parent)
 
 #if defined(Q_OS_MACOS)
-    m_toolbar = new Nedrysoft::SettingsDialog::MacToolbar;
+    m_toolbar = new Nedrysoft::MacHelper::MacToolbar;
 
     m_animationGroup = nullptr;
 #else
@@ -364,7 +364,7 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
             page->section());
 
     connect(settingsPage->m_toolbarItem,
-            &Nedrysoft::SettingsDialog::MacToolbarItem::activated,
+            &Nedrysoft::MacHelper::MacToolbarItem::activated,
             this,
             [this, settingsPage]() {
 

@@ -65,7 +65,7 @@ namespace Nedrysoft { namespace SettingsDialog {
             /**
              * @brief       The icon for this settings page.
              *
-             * @param[in[   isDarkMode set to true to retries the dark mode icon; otherwise false.
+             * @param[in]   isDarkMode set to true to retries the dark mode icon; otherwise false.
              *
              * @returns     a QIcon
              */

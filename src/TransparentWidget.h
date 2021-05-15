@@ -88,10 +88,14 @@ namespace Nedrysoft { namespace SettingsDialog {
             auto count() -> int;
 
         private:
-            QGraphicsOpacityEffect *m_transparencyEffect;               //! the transparency graphics effect set to this widget
-            QVBoxLayout *m_layout;                                      //! layout used on the transparent window
-            QWidget *m_childWidget;                                     //! the child widget being made transparent
+            //! @cond
+
+            QGraphicsOpacityEffect *m_transparencyEffect;
+            QVBoxLayout *m_layout;
+            QWidget *m_childWidget;
             QSize m_childSize;
+
+            //! @endcond
     };
 }}
 

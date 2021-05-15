@@ -46,11 +46,14 @@ namespace Nedrysoft { namespace ThemeSupport {
     class ThemeSupport;
 }}
 
+namespace Nedrysoft { namespace MacHelper {
+    class MacToolbar;
+    class MacToolbarItem;
+}}
+
 namespace Nedrysoft { namespace SettingsDialog {
     class TransparentWidget;
     class ISettingsPage;
-    class MacToolbar;
-    class MacToolbarItem;
 
     /**
      * @brief       The SettingsPage class describes an individual page of the application settings
@@ -69,17 +72,21 @@ namespace Nedrysoft { namespace SettingsDialog {
                 }
 
         public:
-            QString m_name;                             //! display name of the settings category page
-            QString m_description;                      //! description of the settings category page
+            //! @cond
+
+            QString m_name;
+            QString m_description;
 #if defined(Q_OS_MACOS)
-            TransparentWidget *m_widget;                //! the widget that contains the settings for this category
-            Nedrysoft::SettingsDialog::MacToolbarItem *m_toolbarItem;              //! toolbar item
-            QList<ISettingsPage *> m_pageSettings;      //! pointer to the page interfaces
+            TransparentWidget *m_widget;
+            Nedrysoft::MacHelper::MacToolbarItem *m_toolbarItem;
+            QList<ISettingsPage *> m_pageSettings;
 #else
-            QWidget *m_widget;                          //! the widget that contains the settings for this category
-            ISettingsPage *m_pageSettings;              //! pointer to the page interface
+            QWidget *m_widget;
+            ISettingsPage *m_pageSettings;
 #endif
-            QIcon m_icon;                               //! the icon of the page
+            QIcon m_icon;
+
+            //! @endcond
     };
 
     /**
@@ -164,34 +171,38 @@ namespace Nedrysoft { namespace SettingsDialog {
             /**
              * @brief       Adds a setting page to the settings dialog.
              *
-             * @params[in]  page is a ISettingsPage instance.
+             * @param[in]   page is a ISettingsPage instance.
              *
              * @returns     the settings page structure
              */
             auto addPage(ISettingsPage *page) -> SettingsPage *;
 
         private:
+            //! @cond
+
 #if defined(Q_OS_MACOS)
-            Nedrysoft::SettingsDialog::MacToolbar *m_toolbar;   //! A native macOS toolbar (unified style)
-            QMap<Nedrysoft::SettingsDialog::MacToolbarItem *, SettingsPage *> m_pages;     //! The list of settings widgets
-            int m_toolbarHeight;                                //! the height of the unified toolbar
-            int m_maximumWidth;                                 //! the maximal width of all the settings page.
-            QParallelAnimationGroup *m_animationGroup;          //! the currently active animation
+            Nedrysoft::MacHelper::MacToolbar *m_toolbar;
+            QMap<Nedrysoft::MacHelper::MacToolbarItem *, SettingsPage *> m_pages;
+            int m_toolbarHeight;
+            int m_maximumWidth;
+            QParallelAnimationGroup *m_animationGroup;
 #else
-            QVBoxLayout *m_layout;                              //! details layout + main layout + control layout
-            QVBoxLayout *m_detailLayout;                        //! detail layout
-            QHBoxLayout *m_mainLayout;                          //! detail layout + tree widget
-            QHBoxLayout *m_controlsLayout;                      //! apply/ok/cancel layout
-            QTreeWidget *m_treeWidget;                          //! tree widget for categories
-            QStackedWidget *m_stackedWidget;                    //! stacked widget for page content
-            QLabel *m_categoryLabel;                            //! category label
-            QPushButton *m_okButton;                            //! ok button, saves and dismisses the dialog (if changes valid)
-            QPushButton *m_cancelButton;                        //! cancel button, forgets any changes made since last apply
-            QPushButton *m_applyButton;                         //! apply button, saves changes but keeps dialog open
+            QVBoxLayout *m_layout;
+            QVBoxLayout *m_detailLayout;
+            QHBoxLayout *m_mainLayout;
+            QHBoxLayout *m_controlsLayout;
+            QTreeWidget *m_treeWidget;
+            QStackedWidget *m_stackedWidget;
+            QLabel *m_categoryLabel;
+            QPushButton *m_okButton;
+            QPushButton *m_cancelButton;
+            QPushButton *m_applyButton;
             QList<SettingsPage *> m_pages;
 #endif
-            SettingsPage *m_currentPage;                        //! current widget
-            Nedrysoft::ThemeSupport::ThemeSupport *m_themeSupport;     //! theme support
+            SettingsPage *m_currentPage;
+            Nedrysoft::ThemeSupport::ThemeSupport *m_themeSupport;
+
+            //! @endcond
     };
 }}
 
