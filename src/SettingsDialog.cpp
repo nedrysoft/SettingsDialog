@@ -244,7 +244,7 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
                     screenRect ));
 
     Nedrysoft::MacHelper::MacHelper macHelper;
-    
+
     if (Nedrysoft::ThemeSupport::ThemeSupport::isForced()) {
         macHelper.setTitlebarColour(
                 this,
