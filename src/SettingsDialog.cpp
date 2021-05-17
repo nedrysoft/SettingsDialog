@@ -22,35 +22,33 @@
  */
 
 #include "SettingsDialog.h"
-#include <ThemeSupport>
 
 #include "ISettingsPage.h"
 #include "SeparatorWidget.h"
-
-#if defined(Q_OS_MACOS)
-#include <MacToolbar>
-#include <MacToolbarItem>
 #include "TransparentWidget.h"
-
-#include <QGraphicsOpacityEffect>
-#include <QParallelAnimationGroup>
-#include <QPropertyAnimation>
-#else
-#include <QLabel>
-#include <QPushButton>
-#include <QStackedWidget>
-#endif
 
 #include <QApplication>
 #include <QResizeEvent>
 #include <QScreen>
 #include <QTreeWidget>
 #include <QVBoxLayout>
+#include <ThemeSupport>
 
 #if defined(Q_OS_MACOS)
-
+#include <MacToolbar>
+#include <MacToolbarItem>
+#include <MacHelper>
+#include <QGraphicsOpacityEffect>
+#include <QParallelAnimationGroup>
+#include <QPropertyAnimation>
 #include <memory>
+#else
+#include <QLabel>
+#include <QPushButton>
+#include <QStackedWidget>
+#endif
 
+#if defined(Q_OS_MACOS)
 using namespace std::chrono_literals;
 
 constexpr auto TransisionDuration = 100ms;
@@ -244,6 +242,15 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
                     Qt::AlignCenter,
                     QSize(m_maximumWidth, maximumHeight),
                     screenRect ));
+
+    Nedrysoft::MacHelper::MacHelper macHelper;
+    
+    if (Nedrysoft::ThemeSupport::ThemeSupport::isForced()) {
+        macHelper.setTitlebarColour(
+                this,
+                qApp->palette().color(QPalette::Window),
+                Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode() );
+    }
 #endif
 }
 
