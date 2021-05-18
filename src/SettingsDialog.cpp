@@ -64,11 +64,10 @@ constexpr auto CategoryLeftMargin = 4;
 constexpr auto CategoryBottomMargin = 9;
 constexpr auto DetailsLeftMargin = 9;
 #endif
-
+#include <QDebug>
 Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft::SettingsDialog::ISettingsPage *> &pages, QWidget *parent) :
         QWidget(nullptr),
-        m_currentPage(nullptr),
-        m_themeSupport(new Nedrysoft::ThemeSupport::ThemeSupport) {
+        m_currentPage(nullptr) {
 
     Q_UNUSED(parent)
 
@@ -169,14 +168,6 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
     }
 
 #if defined(Q_OS_MACOS)
-    connect(m_themeSupport, &Nedrysoft::ThemeSupport::ThemeSupport::themeChanged, [=](bool isDarkMode) {
-        for(auto settingsPage : m_pages) {
-            if (!settingsPage->m_pageSettings.isEmpty()) {
-                //settingsPage->m_toolBarItem->setIcon(settingsPage->m_pageSettings[0]->icon(isDarkMode));
-            }
-        }
-    });
-
     m_toolbar->enablePreferencesToolbar();
 #endif
 
@@ -243,14 +234,38 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
                     QSize(m_maximumWidth, maximumHeight),
                     screenRect ));
 
+    auto themeSupport = Nedrysoft::ThemeSupport::ThemeSupport::getInstance();
+
     Nedrysoft::MacHelper::MacHelper macHelper;
 
-    if (Nedrysoft::ThemeSupport::ThemeSupport::isForced()) {
+    if (themeSupport->isForced()) {
         macHelper.setTitlebarColour(
                 this,
                 qApp->palette().color(QPalette::Window),
-                Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode() );
+                themeSupport->isDarkMode() );
     }
+
+    connect(themeSupport, &Nedrysoft::ThemeSupport::ThemeSupport::themeChanged, [=](bool isDarkMode) {
+        for(auto settingsPage : m_pages) {
+            if (!settingsPage->m_pageSettings.isEmpty()) {
+                //settingsPage->m_toolBarItem->setIcon(settingsPage->m_pageSettings[0]->icon(isDarkMode));
+            }
+        }
+
+        qDebug() << "settings dialog got themeChanged" << isDarkMode;
+
+        Nedrysoft::MacHelper::MacHelper macHelper;
+
+        if (themeSupport->isForced()) {
+            macHelper.setTitlebarColour(
+                    this,
+                    qApp->palette().color(QPalette::Window),
+                    isDarkMode
+            );
+        } else {
+            macHelper.clearTitlebarColour(this, isDarkMode);
+        }
+    });
 #endif
 }
 
@@ -274,7 +289,6 @@ Nedrysoft::SettingsDialog::SettingsDialog::~SettingsDialog() {
     delete m_categoryLabel;
     delete m_stackedWidget;
 #endif
-    delete m_themeSupport;
 }
 
 auto Nedrysoft::SettingsDialog::SettingsDialog::okToClose() -> bool {
@@ -322,6 +336,8 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
     TransparentWidget *widgetContainer = nullptr;
     SettingsPage *settingsPage = nullptr;
 
+    auto themeSupport = Nedrysoft::ThemeSupport::ThemeSupport::getInstance();
+
     for(auto currentPage : m_pages) {
         if (currentPage->m_name==page->section()) {
             widgetContainer = currentPage->m_widget;
@@ -359,7 +375,7 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
 #else
     settingsPage->m_pageSettings = page;
 #endif
-    settingsPage->m_icon = page->icon(Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode());
+    settingsPage->m_icon = page->icon(themeSupport->isDarkMode());
     settingsPage->m_description = page->description();
 
     if (pageWidget->layout()) {
@@ -367,7 +383,7 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
     }
 
     settingsPage->m_toolbarItem = m_toolbar->addItem(
-            page->icon(Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode()),
+            page->icon(themeSupport->isDarkMode()),
             page->section());
 
     connect(settingsPage->m_toolbarItem,

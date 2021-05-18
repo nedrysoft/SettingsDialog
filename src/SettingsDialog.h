@@ -200,7 +200,6 @@ namespace Nedrysoft { namespace SettingsDialog {
             QList<SettingsPage *> m_pages;
 #endif
             SettingsPage *m_currentPage;
-            Nedrysoft::ThemeSupport::ThemeSupport *m_themeSupport;
 
             //! @endcond
     };
