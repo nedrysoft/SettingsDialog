@@ -24,7 +24,6 @@
 #include "TransparentWidget.h"
 
 #include <QGraphicsOpacityEffect>
-#include <QDebug>
 #include <QScrollArea>
 
 Nedrysoft::SettingsDialog::TransparentWidget::TransparentWidget(double opacity, QWidget *parent) :

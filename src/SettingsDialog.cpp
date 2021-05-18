@@ -64,7 +64,7 @@ constexpr auto CategoryLeftMargin = 4;
 constexpr auto CategoryBottomMargin = 9;
 constexpr auto DetailsLeftMargin = 9;
 #endif
-#include <QDebug>
+
 Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft::SettingsDialog::ISettingsPage *> &pages, QWidget *parent) :
         QWidget(nullptr),
         m_currentPage(nullptr) {
@@ -241,25 +241,23 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
     if (themeSupport->isForced()) {
         macHelper.setTitlebarColour(
                 this,
-                qApp->palette().color(QPalette::Window),
+                QColor::fromRgbF(0.23, 0.22, 0.23),
                 themeSupport->isDarkMode() );
     }
 
     connect(themeSupport, &Nedrysoft::ThemeSupport::ThemeSupport::themeChanged, [=](bool isDarkMode) {
         for(auto settingsPage : m_pages) {
             if (!settingsPage->m_pageSettings.isEmpty()) {
-                //settingsPage->m_toolBarItem->setIcon(settingsPage->m_pageSettings[0]->icon(isDarkMode));
+                settingsPage->m_toolbarItem->setIcon(settingsPage->m_pageSettings[0]->icon(isDarkMode));
             }
         }
-
-        qDebug() << "settings dialog got themeChanged" << isDarkMode;
 
         Nedrysoft::MacHelper::MacHelper macHelper;
 
         if (themeSupport->isForced()) {
             macHelper.setTitlebarColour(
                     this,
-                    qApp->palette().color(QPalette::Window),
+                    QColor::fromRgbF(0.23, 0.22, 0.23),
                     isDarkMode
             );
         } else {
