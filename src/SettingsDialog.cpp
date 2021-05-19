@@ -25,7 +25,9 @@
 
 #include "ISettingsPage.h"
 #include "SeparatorWidget.h"
+#if defined(Q_OS_MACOS)
 #include "TransparentWidget.h"
+#endif
 
 #include <QApplication>
 #include <QResizeEvent>
@@ -65,11 +67,53 @@ constexpr auto CategoryBottomMargin = 9;
 constexpr auto DetailsLeftMargin = 9;
 #endif
 
+constexpr auto ThemeStylesheet = R"(
+    QStackedWidget {
+        [base-background-colour];
+    }
+
+    QTabWidget::pane {
+        [base-background-colour];
+    }
+
+    QTabWidget::tab-bar {
+        [base-background-colour];
+    }
+
+    QTabBar::tab:selected {
+        [background-colour];
+    }
+
+    QTabBar::tab:selected {
+        [background-colour];
+    }
+
+    QTabBar::tab:!selected {
+        [base-background-colour];
+    }
+)";
+
+constexpr auto ThemeSubStylesheet = R"(
+    QStackedWidget {
+        [background-colour];
+    }
+)";
+
 Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft::SettingsDialog::ISettingsPage *> &pages, QWidget *parent) :
         QWidget(nullptr),
         m_currentPage(nullptr) {
 
     Q_UNUSED(parent)
+
+#if defined(Q_OS_WINDOWS)
+    auto themeSupport = Nedrysoft::ThemeSupport::ThemeSupport::getInstance();
+
+    connect(themeSupport, &Nedrysoft::ThemeSupport::ThemeSupport::themeChanged, [=](bool isDarkMode) {
+        setStyleSheet(updateStyleSheet(ThemeStylesheet, isDarkMode));
+    });
+
+    setStyleSheet(updateStyleSheet(ThemeStylesheet, themeSupport->isDarkMode()));
+#endif
 
 #if defined(Q_OS_MACOS)
     m_toolbar = new Nedrysoft::MacHelper::MacToolbar;
@@ -328,13 +372,13 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::nativeWindowHandle() -> QWindow 
 
     return window()->windowHandle();
 }
-
+#include <QDebug>
 auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> Nedrysoft::SettingsDialog::SettingsPage * {
+    auto themeSupport = Nedrysoft::ThemeSupport::ThemeSupport::getInstance();
+
 #if defined(Q_OS_MACOS)
     TransparentWidget *widgetContainer = nullptr;
     SettingsPage *settingsPage = nullptr;
-
-    auto themeSupport = Nedrysoft::ThemeSupport::ThemeSupport::getInstance();
 
     for(auto currentPage : m_pages) {
         if (currentPage->m_name==page->section()) {
@@ -479,10 +523,24 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
 
         tabWidget = new QTabWidget();
 
-        treeItem->setIcon(0, page->icon(Nedrysoft::ThemeSupport::ThemeSupport::isDarkMode()));
+        treeItem->setIcon(0, page->icon(themeSupport->isDarkMode()));
         treeItem->setText(0, page->section());
         treeItem->setData(0, Qt::UserRole, QVariant::fromValue(tabWidget));
         treeItem->setData(0, Qt::ToolTipRole, page->description());
+
+#if defined(Q_OS_WINDOWS)
+        auto themeSupport = Nedrysoft::ThemeSupport::ThemeSupport::getInstance();
+
+        tabWidget->setStyleSheet(updateStyleSheet(ThemeSubStylesheet, themeSupport->isDarkMode()));
+
+        connect(themeSupport, &Nedrysoft::ThemeSupport::ThemeSupport::themeChanged, [=](bool isDarkMode) {
+            auto themeSupport = Nedrysoft::ThemeSupport::ThemeSupport::getInstance();
+
+            treeItem->setIcon(0, page->icon(themeSupport->isDarkMode()));
+
+            tabWidget->setStyleSheet(updateStyleSheet(ThemeSubStylesheet, themeSupport->isDarkMode()));
+        });
+#endif
 
         m_treeWidget->addTopLevelItem(treeItem);
 
@@ -584,3 +642,21 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::acceptSettings() -> bool {
 #endif
     return false;
 }
+
+auto Nedrysoft::SettingsDialog::SettingsDialog::updateStyleSheet(
+        const QString &styleSheet,
+        bool isDarkMode) -> QString {
+
+    auto modifiedStyleSheet = QString(styleSheet);
+
+    if (isDarkMode) {
+        modifiedStyleSheet.replace("[background-colour]", "background-color: #282c29;");
+        modifiedStyleSheet.replace("[base-background-colour]", "background-color: #202421;");
+    } else {
+        modifiedStyleSheet.replace("[background-colour]", "");
+        modifiedStyleSheet.replace("[base-background-colour]", "");
+    }
+
+    return modifiedStyleSheet;
+}
+

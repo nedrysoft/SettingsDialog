@@ -177,7 +177,17 @@ namespace Nedrysoft { namespace SettingsDialog {
              */
             auto addPage(ISettingsPage *page) -> SettingsPage *;
 
-        private:
+            /**
+             * @brief       Updates the stylesheet for light/dark mode.
+             *
+             * @param[in]   styleSheet the stylecheet to update.
+             * @param[in]   isDarkMode true if dark mode; otherwise false.
+             *
+             * @returns     the style sheet.
+             */
+            auto updateStyleSheet(const QString &styleSheet, bool isDarkMode) -> QString;
+
+     private:
             //! @cond
 
 #if defined(Q_OS_MACOS)
