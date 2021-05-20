@@ -105,7 +105,7 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
 
     Q_UNUSED(parent)
 
-#if defined(Q_OS_WINDOWS)
+//#if defined(Q_OS_WINDOWS)
     auto themeSupport = Nedrysoft::ThemeSupport::ThemeSupport::getInstance();
 
     connect(themeSupport, &Nedrysoft::ThemeSupport::ThemeSupport::themeChanged, [=](bool isDarkMode) {
@@ -113,7 +113,7 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
     });
 
     setStyleSheet(updateStyleSheet(ThemeStylesheet, themeSupport->isDarkMode()));
-#endif
+//#endif
 
 #if defined(Q_OS_MACOS)
     m_toolbar = new Nedrysoft::MacHelper::MacToolbar;
@@ -528,7 +528,7 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
         treeItem->setData(0, Qt::UserRole, QVariant::fromValue(tabWidget));
         treeItem->setData(0, Qt::ToolTipRole, page->description());
 
-#if defined(Q_OS_WINDOWS)
+//#if defined(Q_OS_WINDOWS)
         auto themeSupport = Nedrysoft::ThemeSupport::ThemeSupport::getInstance();
 
         tabWidget->setStyleSheet(updateStyleSheet(ThemeSubStylesheet, themeSupport->isDarkMode()));
@@ -540,7 +540,7 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
 
             tabWidget->setStyleSheet(updateStyleSheet(ThemeSubStylesheet, themeSupport->isDarkMode()));
         });
-#endif
+//#endif
 
         m_treeWidget->addTopLevelItem(treeItem);
 
