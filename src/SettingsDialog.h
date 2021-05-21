@@ -116,7 +116,7 @@ namespace Nedrysoft { namespace SettingsDialog {
             /**
              * @brief       Destroys the SettingsDialog.
              */
-            ~SettingsDialog() override;
+            ~SettingsDialog();
 
             /**
              * @brief       This signal is emitted when the window is closed by the user.
@@ -187,6 +187,11 @@ namespace Nedrysoft { namespace SettingsDialog {
              */
             auto updateStyleSheet(const QString &styleSheet, bool isDarkMode) -> QString;
 
+            /**
+             * @brief       Updates the title & tool bars for light/dark mode theme changes.
+             */
+            auto updateTitlebar() -> void;
+
      private:
             //! @cond
 
@@ -210,6 +215,7 @@ namespace Nedrysoft { namespace SettingsDialog {
             QList<SettingsPage *> m_pages;
 #endif
             SettingsPage *m_currentPage;
+            QMetaObject::Connection m_themeChangedConnection;
 
             //! @endcond
     };

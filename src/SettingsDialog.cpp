@@ -49,7 +49,7 @@
 #include <QPushButton>
 #include <QStackedWidget>
 #endif
-
+#include <QDebug>
 #if defined(Q_OS_MACOS)
 using namespace std::chrono_literals;
 
@@ -105,7 +105,6 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
 
     Q_UNUSED(parent)
 
-//#if defined(Q_OS_WINDOWS)
     auto themeSupport = Nedrysoft::ThemeSupport::ThemeSupport::getInstance();
 
     connect(themeSupport, &Nedrysoft::ThemeSupport::ThemeSupport::themeChanged, [=](bool isDarkMode) {
@@ -113,7 +112,6 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
     });
 
     setStyleSheet(updateStyleSheet(ThemeStylesheet, themeSupport->isDarkMode()));
-//#endif
 
 #if defined(Q_OS_MACOS)
     m_toolbar = new Nedrysoft::MacHelper::MacToolbar;
@@ -278,37 +276,46 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
                     QSize(m_maximumWidth, maximumHeight),
                     screenRect ));
 
-    auto themeSupport = Nedrysoft::ThemeSupport::ThemeSupport::getInstance();
+    updateTitlebar();
 
-    Nedrysoft::MacHelper::MacHelper macHelper;
+    m_themeChangedConnection = connect(
+            themeSupport,
+            &Nedrysoft::ThemeSupport::ThemeSupport::themeChanged,
+            [=](bool isDarkMode) {
 
-    if (themeSupport->isForced()) {
-        macHelper.setTitlebarColour(
-                this,
-                QColor::fromRgbF(0.23, 0.22, 0.23),
-                themeSupport->isDarkMode() );
-    }
-
-    connect(themeSupport, &Nedrysoft::ThemeSupport::ThemeSupport::themeChanged, [=](bool isDarkMode) {
         for(auto settingsPage : m_pages) {
             if (!settingsPage->m_pageSettings.isEmpty()) {
                 settingsPage->m_toolbarItem->setIcon(settingsPage->m_pageSettings[0]->icon(isDarkMode));
             }
         }
 
-        Nedrysoft::MacHelper::MacHelper macHelper;
-
-        if (themeSupport->isForced()) {
-            macHelper.setTitlebarColour(
-                    this,
-                    QColor::fromRgbF(0.23, 0.22, 0.23),
-                    isDarkMode
-            );
-        } else {
-            macHelper.clearTitlebarColour(this, isDarkMode);
-        }
+        updateTitlebar();
     });
 #endif
+}
+
+auto Nedrysoft::SettingsDialog::SettingsDialog::updateTitlebar() -> void {
+    Nedrysoft::MacHelper::MacHelper macHelper;
+
+    auto themeSupport = Nedrysoft::ThemeSupport::ThemeSupport::getInstance();
+
+    if (themeSupport->isForced()) {
+        QColor colour;
+
+        if (themeSupport->isDarkMode()) {
+            colour = QColor::fromRgbF(0.23, 0.22, 0.23);
+        } else {
+            colour = QColor::fromRgbF(0.91, 0.90, 0.91);
+        }
+
+        macHelper.setTitlebarColour(
+                this,
+                colour,
+                themeSupport->isDarkMode()
+        );
+    } else {
+        macHelper.clearTitlebarColour(this, themeSupport->isDarkMode());
+    }
 }
 
 auto Nedrysoft::SettingsDialog::SettingsDialog::sizeHint() -> QSize {
@@ -320,6 +327,7 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::sizeHint() -> QSize {
 }
 
 Nedrysoft::SettingsDialog::SettingsDialog::~SettingsDialog() {
+    disconnect(m_themeChangedConnection);
 #if defined(Q_OS_MACOS)
     delete m_toolbar;
 #else
@@ -528,7 +536,6 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
         treeItem->setData(0, Qt::UserRole, QVariant::fromValue(tabWidget));
         treeItem->setData(0, Qt::ToolTipRole, page->description());
 
-//#if defined(Q_OS_WINDOWS)
         auto themeSupport = Nedrysoft::ThemeSupport::ThemeSupport::getInstance();
 
         tabWidget->setStyleSheet(updateStyleSheet(ThemeSubStylesheet, themeSupport->isDarkMode()));
@@ -540,7 +547,6 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
 
             tabWidget->setStyleSheet(updateStyleSheet(ThemeSubStylesheet, themeSupport->isDarkMode()));
         });
-//#endif
 
         m_treeWidget->addTopLevelItem(treeItem);
 
