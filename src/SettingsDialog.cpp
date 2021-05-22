@@ -107,16 +107,26 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
 
     auto themeSupport = Nedrysoft::ThemeSupport::ThemeSupport::getInstance();
 
-    auto signal = connect(
+    auto themeChangedSignal = connect(
             themeSupport,
             &Nedrysoft::ThemeSupport::ThemeSupport::themeChanged,
             [=](bool isDarkMode) {
 
         setStyleSheet(updateStyleSheet(ThemeStylesheet, isDarkMode));
+
+#if defined(Q_OS_MACOS)
+        for(auto settingsPage : m_pages) {
+            if (!settingsPage->m_pageSettings.isEmpty()) {
+                settingsPage->m_toolbarItem->setIcon(settingsPage->m_pageSettings[0]->icon(isDarkMode));
+            }
+        }
+
+        updateTitlebar();
+#endif
     });
 
-    connect(this, &QObject::destroyed, [themeSupport, signal]() {
-        themeSupport->disconnect(signal);
+    connect(this, &QObject::destroyed, [themeSupport, themeChangedSignal]() {
+        themeSupport->disconnect(themeChangedSignal);
     });
 
     setStyleSheet(updateStyleSheet(ThemeStylesheet, themeSupport->isDarkMode()));
@@ -208,14 +218,15 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
 #endif
 
     for (auto page: pages) {
-        connect(page, &Nedrysoft::SettingsDialog::ISettingsPage::settingsChanged, [=]() {
-            m_applyButton->setDisabled(false);
-        });
 #if defined(Q_OS_MACOS)
         auto settingsPage = addPage(page);
 
         m_pages[settingsPage->m_toolbarItem] = settingsPage;
 #else
+        connect(page, &Nedrysoft::SettingsDialog::ISettingsPage::settingsChanged, [=]() {
+            m_applyButton->setDisabled(false);
+        });
+
         auto settingsPage = addPage(page);
 
         m_pages.append(settingsPage);
@@ -290,24 +301,6 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
                     screenRect ));
 
     updateTitlebar();
-
-    auto signal = connect(
-            themeSupport,
-            &Nedrysoft::ThemeSupport::ThemeSupport::themeChanged,
-            [=](bool isDarkMode) {
-
-        for(auto settingsPage : m_pages) {
-            if (!settingsPage->m_pageSettings.isEmpty()) {
-                settingsPage->m_toolbarItem->setIcon(settingsPage->m_pageSettings[0]->icon(isDarkMode));
-            }
-        }
-
-        updateTitlebar();
-    });
-
-    connect(this, &QObject::destroyed, [themeSupport, signal]() {
-        themeSupport->disconnect(signal);
-    });
 #endif
 }
 
@@ -325,7 +318,7 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::updateTitlebar() -> void {
         } else {
             colour = QColor::fromRgbF(0.91, 0.90, 0.91);
         }
-
+        
         macHelper.setTitlebarColour(
                 this,
                 colour,
