@@ -89,6 +89,11 @@ namespace Nedrysoft { namespace SettingsDialog {
              * @brief       Applies the current settings.
              */
             virtual auto acceptSettings() -> void = 0;
+
+            /**
+             * @brief       Emitted when the pages settings have changed.
+             */
+            Q_SIGNAL void settingsChanged();
     };
 }}
 

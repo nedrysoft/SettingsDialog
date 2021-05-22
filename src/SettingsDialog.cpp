@@ -107,8 +107,16 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
 
     auto themeSupport = Nedrysoft::ThemeSupport::ThemeSupport::getInstance();
 
-    connect(themeSupport, &Nedrysoft::ThemeSupport::ThemeSupport::themeChanged, [=](bool isDarkMode) {
+    auto signal = connect(
+            themeSupport,
+            &Nedrysoft::ThemeSupport::ThemeSupport::themeChanged,
+            [=](bool isDarkMode) {
+
         setStyleSheet(updateStyleSheet(ThemeStylesheet, isDarkMode));
+    });
+
+    connect(this, &QObject::destroyed, [themeSupport, signal]() {
+        themeSupport->disconnect(signal);
     });
 
     setStyleSheet(updateStyleSheet(ThemeStylesheet, themeSupport->isDarkMode()));
@@ -175,6 +183,8 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
     m_cancelButton = new QPushButton(tr("Cancel"));
     m_applyButton = new QPushButton(tr("Apply"));
 
+    m_applyButton->setDisabled(true);
+
     connect(m_okButton, &QPushButton::clicked, [=](bool /*checked*/) {
         acceptSettings();
         close();
@@ -198,6 +208,9 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
 #endif
 
     for (auto page: pages) {
+        connect(page, &Nedrysoft::SettingsDialog::ISettingsPage::settingsChanged, [=]() {
+            m_applyButton->setDisabled(false);
+        });
 #if defined(Q_OS_MACOS)
         auto settingsPage = addPage(page);
 
@@ -278,7 +291,7 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
 
     updateTitlebar();
 
-    m_themeChangedConnection = connect(
+    auto signal = connect(
             themeSupport,
             &Nedrysoft::ThemeSupport::ThemeSupport::themeChanged,
             [=](bool isDarkMode) {
@@ -291,10 +304,15 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
 
         updateTitlebar();
     });
+
+    connect(this, &QObject::destroyed, [themeSupport, signal]() {
+        themeSupport->disconnect(signal);
+    });
 #endif
 }
 
 auto Nedrysoft::SettingsDialog::SettingsDialog::updateTitlebar() -> void {
+#if defined(Q_OS_MACOS)
     Nedrysoft::MacHelper::MacHelper macHelper;
 
     auto themeSupport = Nedrysoft::ThemeSupport::ThemeSupport::getInstance();
@@ -316,6 +334,7 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::updateTitlebar() -> void {
     } else {
         macHelper.clearTitlebarColour(this, themeSupport->isDarkMode());
     }
+#endif
 }
 
 auto Nedrysoft::SettingsDialog::SettingsDialog::sizeHint() -> QSize {
@@ -327,11 +346,12 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::sizeHint() -> QSize {
 }
 
 Nedrysoft::SettingsDialog::SettingsDialog::~SettingsDialog() {
-    disconnect(m_themeChangedConnection);
 #if defined(Q_OS_MACOS)
     delete m_toolbar;
 #else
     for (auto page : m_pages) {
+        disconnect(page->m_pageSettings, 0, 0, 0);
+
         delete page;
     }
     delete m_layout;
@@ -380,7 +400,7 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::nativeWindowHandle() -> QWindow 
 
     return window()->windowHandle();
 }
-#include <QDebug>
+
 auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> Nedrysoft::SettingsDialog::SettingsPage * {
     auto themeSupport = Nedrysoft::ThemeSupport::ThemeSupport::getInstance();
 
@@ -540,12 +560,20 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
 
         tabWidget->setStyleSheet(updateStyleSheet(ThemeSubStylesheet, themeSupport->isDarkMode()));
 
-        connect(themeSupport, &Nedrysoft::ThemeSupport::ThemeSupport::themeChanged, [=](bool isDarkMode) {
+        auto signal = connect(
+                themeSupport,
+                &Nedrysoft::ThemeSupport::ThemeSupport::themeChanged,
+                [=](bool isDarkMode) {
+
             auto themeSupport = Nedrysoft::ThemeSupport::ThemeSupport::getInstance();
 
             treeItem->setIcon(0, page->icon(themeSupport->isDarkMode()));
 
             tabWidget->setStyleSheet(updateStyleSheet(ThemeSubStylesheet, themeSupport->isDarkMode()));
+        });
+
+        connect(this, &QObject::destroyed, [themeSupport, signal]() {
+            themeSupport->disconnect(signal);
         });
 
         m_treeWidget->addTopLevelItem(treeItem);
@@ -594,8 +622,6 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::closeEvent(QCloseEvent *event) -
     if (okToClose()) {
         event->accept();
 
-        acceptSettings();
-
         Q_EMIT closed();
     } else {
         event->ignore();
@@ -642,6 +668,8 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::acceptSettings() -> bool {
         for(auto page : m_pages) {
             page->m_pageSettings->acceptSettings();
         }
+
+        this->m_applyButton->setDisabled(true);
 
         return true;
     }

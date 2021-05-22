@@ -192,7 +192,7 @@ namespace Nedrysoft { namespace SettingsDialog {
              */
             auto updateTitlebar() -> void;
 
-     private:
+        private:
             //! @cond
 
 #if defined(Q_OS_MACOS)
@@ -215,7 +215,6 @@ namespace Nedrysoft { namespace SettingsDialog {
             QList<SettingsPage *> m_pages;
 #endif
             SettingsPage *m_currentPage;
-            QMetaObject::Connection m_themeChangedConnection;
 
             //! @endcond
     };
