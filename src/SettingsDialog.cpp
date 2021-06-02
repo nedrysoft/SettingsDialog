@@ -49,7 +49,7 @@
 #include <QPushButton>
 #include <QStackedWidget>
 #endif
-#include <QDebug>
+
 #if defined(Q_OS_MACOS)
 using namespace std::chrono_literals;
 
@@ -108,22 +108,23 @@ Nedrysoft::SettingsDialog::SettingsDialog::SettingsDialog(const QList<Nedrysoft:
     auto themeSupport = Nedrysoft::ThemeSupport::ThemeSupport::getInstance();
 
     auto themeChangedSignal = connect(
-            themeSupport,
-            &Nedrysoft::ThemeSupport::ThemeSupport::themeChanged,
-            [=](bool isDarkMode) {
+        themeSupport,
+        &Nedrysoft::ThemeSupport::ThemeSupport::themeChanged,
+        [=](bool isDarkMode) {
 
-        setStyleSheet(updateStyleSheet(ThemeStylesheet, isDarkMode));
+            setStyleSheet(updateStyleSheet(ThemeStylesheet, isDarkMode));
 
 #if defined(Q_OS_MACOS)
-        for(auto settingsPage : m_pages) {
-            if (!settingsPage->m_pageSettings.isEmpty()) {
-                settingsPage->m_toolbarItem->setIcon(settingsPage->m_pageSettings[0]->icon(isDarkMode));
+            for(auto settingsPage : m_pages) {
+                if (!settingsPage->m_pageSettings.isEmpty()) {
+                    settingsPage->m_toolbarItem->setIcon(settingsPage->m_pageSettings[0]->icon(isDarkMode));
+                }
             }
-        }
 
-        updateTitlebar();
+            updateTitlebar();
 #endif
-    });
+        }
+    );
 
     connect(this, &QObject::destroyed, [themeSupport, themeChangedSignal]() {
         themeSupport->disconnect(themeChangedSignal);
@@ -554,16 +555,17 @@ auto Nedrysoft::SettingsDialog::SettingsDialog::addPage(ISettingsPage *page) -> 
         tabWidget->setStyleSheet(updateStyleSheet(ThemeSubStylesheet, themeSupport->isDarkMode()));
 
         auto signal = connect(
-                themeSupport,
-                &Nedrysoft::ThemeSupport::ThemeSupport::themeChanged,
-                [=](bool isDarkMode) {
+            themeSupport,
+            &Nedrysoft::ThemeSupport::ThemeSupport::themeChanged,
+            [=](bool isDarkMode) {
 
-            auto themeSupport = Nedrysoft::ThemeSupport::ThemeSupport::getInstance();
+                auto themeSupport = Nedrysoft::ThemeSupport::ThemeSupport::getInstance();
 
-            treeItem->setIcon(0, page->icon(themeSupport->isDarkMode()));
+                treeItem->setIcon(0, page->icon(themeSupport->isDarkMode()));
 
-            tabWidget->setStyleSheet(updateStyleSheet(ThemeSubStylesheet, themeSupport->isDarkMode()));
-        });
+                tabWidget->setStyleSheet(updateStyleSheet(ThemeSubStylesheet, themeSupport->isDarkMode()));
+            }
+        );
 
         connect(this, &QObject::destroyed, [themeSupport, signal]() {
             themeSupport->disconnect(signal);
